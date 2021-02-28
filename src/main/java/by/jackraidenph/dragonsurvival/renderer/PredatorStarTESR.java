@@ -18,10 +18,10 @@ import org.lwjgl.opengl.GL11;
 
 public class PredatorStarTESR extends TileEntityRenderer<PredatorStarTileEntity> {
 
-    public static final Material CAGE_TEXTURE = new Material(PlayerContainer.LOCATION_BLOCKS_TEXTURE, new ResourceLocation(DragonSurvivalMod.MODID, "te/star/cage"));
-    public static final Material WIND_TEXTURE = new Material(PlayerContainer.LOCATION_BLOCKS_TEXTURE, new ResourceLocation(DragonSurvivalMod.MODID, "te/star/wind"));
-    public static final Material VERTICAL_WIND_TEXTURE = new Material(PlayerContainer.LOCATION_BLOCKS_TEXTURE, new ResourceLocation(DragonSurvivalMod.MODID, "te/star/wind_vertical"));
-    public static final Material OPEN_EYE_TEXTURE = new Material(PlayerContainer.LOCATION_BLOCKS_TEXTURE, new ResourceLocation(DragonSurvivalMod.MODID, "te/star/open_eye"));
+    public static final Material CAGE_TEXTURE = new Material(PlayerContainer.LOCATION_BLOCKS_TEXTURE, new ResourceLocation(DragonSurvivalMod.MOD_ID, "te/star/cage"));
+    public static final Material WIND_TEXTURE = new Material(PlayerContainer.LOCATION_BLOCKS_TEXTURE, new ResourceLocation(DragonSurvivalMod.MOD_ID, "te/star/wind"));
+    public static final Material VERTICAL_WIND_TEXTURE = new Material(PlayerContainer.LOCATION_BLOCKS_TEXTURE, new ResourceLocation(DragonSurvivalMod.MOD_ID, "te/star/wind_vertical"));
+    public static final Material OPEN_EYE_TEXTURE = new Material(PlayerContainer.LOCATION_BLOCKS_TEXTURE, new ResourceLocation(DragonSurvivalMod.MOD_ID, "te/star/open_eye"));
 
     /*private static final ShaderCallback CALLBACK = shader -> {
         int width = GlStateManager.getUniformLocation(shader, "width");

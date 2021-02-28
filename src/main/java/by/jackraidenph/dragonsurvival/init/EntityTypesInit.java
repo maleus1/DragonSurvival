@@ -1,4 +1,4 @@
-package by.jackraidenph.dragonsurvival.handlers;
+package by.jackraidenph.dragonsurvival.init;
 
 import by.jackraidenph.dragonsurvival.DragonSurvivalMod;
 import by.jackraidenph.dragonsurvival.entity.MagicalPredatorEntity;
@@ -26,22 +26,22 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-@Mod.EventBusSubscriber(modid = DragonSurvivalMod.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = DragonSurvivalMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class EntityTypesInit {
 
     private static final List<EntityType<?>> entities = Lists.newArrayList();
     private static final List<Item> spawnEggs = Lists.newArrayList();
 
-    public static EntityType<MagicalPredatorEntity> MAGICAL_BEAST;
+    public static EntityType<MagicalPredatorEntity> magicalPredator;
 
     private static <T extends CreatureEntity> EntityType<T> createEntity(Class<T> entityClass, EntityType.IFactory<T> factory, float width, float height, int eggPrimary, int eggSecondary) {
 
-        ResourceLocation location = new ResourceLocation(DragonSurvivalMod.MODID, classToString(entityClass));
+        ResourceLocation location = new ResourceLocation(DragonSurvivalMod.MOD_ID, classToString(entityClass));
         EntityType<T> entity = EntityType.Builder.create(factory, EntityClassification.MONSTER).size(width, height).setTrackingRange(64).setUpdateInterval(1).build(location.toString());
         entity.setRegistryName(location);
         entities.add(entity);
         Item spawnEgg = new SpawnEggItem(entity, eggPrimary, eggSecondary, (new Item.Properties()).group(BlockInit.blocks));
-        spawnEgg.setRegistryName(new ResourceLocation(DragonSurvivalMod.MODID, classToString(entityClass) + "_spawn_egg"));
+        spawnEgg.setRegistryName(new ResourceLocation(DragonSurvivalMod.MOD_ID, classToString(entityClass) + "_spawn_egg"));
         spawnEggs.add(spawnEgg);
 
         return entity;
@@ -63,7 +63,7 @@ public class EntityTypesInit {
 
     @SubscribeEvent
     public static void registerSpawnEggs(RegistryEvent.Register<Item> event) {
-        MAGICAL_BEAST = createEntity(MagicalPredatorEntity.class, MagicalPredatorEntity::new, 1.1f, 1.5625f, 0x000000, 0xFFFFFF);
+        magicalPredator = createEntity(MagicalPredatorEntity.class, MagicalPredatorEntity::new, 1.1f, 1.5625f, 0x000000, 0xFFFFFF);
         for (Item spawnEgg : spawnEggs) {
             Preconditions.checkNotNull(spawnEgg.getRegistryName(), "registry name is null");
             event.getRegistry().register(spawnEgg);
@@ -95,7 +95,7 @@ public class EntityTypesInit {
             throw new IllegalArgumentException("Do not leave the BiomeDictionary type inclusion list empty. If you wish to disable spawning of an entity, set the weight to 0 instead.");
         }
         for (Biome biome : spawnableBiomes) {
-            biome.getSpawns(EntityClassification.MONSTER).add(new Biome.SpawnListEntry(MAGICAL_BEAST, ConfigurationHandler.SPAWN.weight.get(), ConfigurationHandler.SPAWN.min.get(), ConfigurationHandler.SPAWN.max.get()));
+            biome.getSpawns(EntityClassification.MONSTER).add(new Biome.SpawnListEntry(magicalPredator, ConfigurationHandler.SPAWN.weight.get(), ConfigurationHandler.SPAWN.min.get(), ConfigurationHandler.SPAWN.max.get()));
         }
     }
 }

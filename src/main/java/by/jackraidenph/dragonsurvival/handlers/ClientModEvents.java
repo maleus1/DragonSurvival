@@ -2,6 +2,9 @@ package by.jackraidenph.dragonsurvival.handlers;
 
 import by.jackraidenph.dragonsurvival.DragonSurvivalMod;
 import by.jackraidenph.dragonsurvival.gui.DragonScreen;
+import by.jackraidenph.dragonsurvival.init.BlockInit;
+import by.jackraidenph.dragonsurvival.init.EntityTypesInit;
+import by.jackraidenph.dragonsurvival.init.TileEntityTypesInit;
 import by.jackraidenph.dragonsurvival.nest.NestScreen;
 import by.jackraidenph.dragonsurvival.renderer.MagicalPredatorRenderer;
 import by.jackraidenph.dragonsurvival.renderer.PredatorStarTESR;
@@ -45,17 +48,17 @@ public class ClientModEvents {
 
     @SubscribeEvent
     public static void onTextureStitchEvent(TextureStitchEvent.Pre event) {
-        event.addSprite(new ResourceLocation(DragonSurvivalMod.MODID, "te/star/cage"));
-        event.addSprite(new ResourceLocation(DragonSurvivalMod.MODID, "te/star/wind"));
-        event.addSprite(new ResourceLocation(DragonSurvivalMod.MODID, "te/star/open_eye"));
-        event.addSprite(new ResourceLocation(DragonSurvivalMod.MODID, "te/star/wind_vertical"));
+        event.addSprite(new ResourceLocation(DragonSurvivalMod.MOD_ID, "te/star/cage"));
+        event.addSprite(new ResourceLocation(DragonSurvivalMod.MOD_ID, "te/star/wind"));
+        event.addSprite(new ResourceLocation(DragonSurvivalMod.MOD_ID, "te/star/open_eye"));
+        event.addSprite(new ResourceLocation(DragonSurvivalMod.MOD_ID, "te/star/wind_vertical"));
         DragonSurvivalMod.LOGGER.info("Successfully added sprites!");
     }
 
     @SubscribeEvent
     public static void setupClient(final FMLClientSetupEvent event) {
-        RenderTypeLookup.setRenderLayer(BlockInit.dragon_altar, RenderType.getCutout());
-        RenderingRegistry.registerEntityRenderingHandler(EntityTypesInit.MAGICAL_BEAST, MagicalPredatorRenderer::new);
+        RenderTypeLookup.setRenderLayer(BlockInit.dragonAltar, RenderType.getCutout());
+        RenderingRegistry.registerEntityRenderingHandler(EntityTypesInit.magicalPredator, MagicalPredatorRenderer::new);
         ClientRegistry.bindTileEntityRenderer(TileEntityTypesInit.PREDATOR_STAR_TILE_ENTITY_TYPE, PredatorStarTESR::new);
         ShaderHelper.initShaders();
 
@@ -85,7 +88,7 @@ public class ClientModEvents {
         InputStream inputStream = url.openConnection().getInputStream();
         NativeImage customTexture = NativeImage.read(inputStream);
         ResourceLocation resourceLocation;
-        Minecraft.getInstance().getTextureManager().loadTexture(resourceLocation = new ResourceLocation(DragonSurvivalMod.MODID, dragonStage.name), new DynamicTexture(customTexture));
+        Minecraft.getInstance().getTextureManager().loadTexture(resourceLocation = new ResourceLocation(DragonSurvivalMod.MOD_ID, dragonStage.name), new DynamicTexture(customTexture));
         return resourceLocation;
     }
 
@@ -111,7 +114,7 @@ public class ClientModEvents {
         InputStream inputStream = url.openConnection().getInputStream();
         NativeImage customTexture = NativeImage.read(inputStream);
         ResourceLocation resourceLocation;
-        Minecraft.getInstance().getTextureManager().loadTexture(resourceLocation = new ResourceLocation(DragonSurvivalMod.MODID, dragonStage.name), new DynamicTexture(customTexture));
+        Minecraft.getInstance().getTextureManager().loadTexture(resourceLocation = new ResourceLocation(DragonSurvivalMod.MOD_ID, dragonStage.name), new DynamicTexture(customTexture));
         return resourceLocation;
     }
 
@@ -137,7 +140,7 @@ public class ClientModEvents {
                 customTexture = NativeImage.read(new FileInputStream(fileNameB));
             }
             if (customTexture != null) {
-                minecraft.getTextureManager().loadTexture(skinLocation = new ResourceLocation(DragonSurvivalMod.MODID, dragonStage), new DynamicTexture(customTexture));
+                minecraft.getTextureManager().loadTexture(skinLocation = new ResourceLocation(DragonSurvivalMod.MOD_ID, dragonStage), new DynamicTexture(customTexture));
                 return skinLocation;
             }
         } catch (IOException e) {

@@ -1,7 +1,9 @@
 package by.jackraidenph.dragonsurvival;
 
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.math.MathHelper;
+import org.lwjgl.glfw.GLFW;
 
 public class Functions {
     public static float getDefaultXRightLimbRotation(float limbSwing, float swingAmount) {
@@ -32,6 +34,15 @@ public class Functions {
 
     public static void blit(Screen screen, int startX, int startY, float textureX, float textureY, int width, int height, int sizeX, int sizeY) {
         screen.blit(startX, startY, textureX, textureY, width, height, sizeX, sizeY);
+    }
+
+    public static byte getKeyMode(KeyBinding keyBinding) {
+        if (keyBinding.isKeyDown())
+            return GLFW.GLFW_REPEAT;
+        else if (keyBinding.isPressed())
+            return GLFW.GLFW_PRESS;
+        else
+            return GLFW.GLFW_RELEASE;
     }
 
 }

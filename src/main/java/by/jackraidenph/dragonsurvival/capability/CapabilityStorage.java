@@ -1,5 +1,6 @@
 package by.jackraidenph.dragonsurvival.capability;
 
+import by.jackraidenph.dragonsurvival.DragonSurvivalMod;
 import by.jackraidenph.dragonsurvival.util.DragonLevel;
 import by.jackraidenph.dragonsurvival.util.DragonType;
 import net.minecraft.nbt.CompoundNBT;
@@ -37,11 +38,17 @@ public class CapabilityStorage implements Capability.IStorage<DragonStateHandler
             tag.putDouble("headPitch", movementData.headPitch);
             tag.put("headPos", writeVec3d(movementData.headPos));
             tag.put("tailPos", writeVec3d(movementData.tailPos));
-
             tag.putBoolean("isHiding", instance.isHiding());
             tag.putString("type", instance.getType().toString());
             tag.putString("level", instance.getLevel().toString());
-            tag.putFloat("Health", instance.getHealth());
+            tag.putFloat("health", instance.getHealth());
+            tag.putInt("maxAbilities", instance.getMaxActiveAbilitySlots());
+
+            tag.putString("abilitySlot1", instance.getAbilityFromSlot(0).getId());
+            tag.putString("abilitySlot2", instance.getAbilityFromSlot(1).getId());
+            tag.putString("abilitySlot3", instance.getAbilityFromSlot(2).getId());
+            tag.putString("abilitySlot4", instance.getAbilityFromSlot(3).getId());
+            tag.putString("abilitySlot5", instance.getAbilityFromSlot(4).getId());
         }
         return tag;
     }
@@ -60,7 +67,14 @@ public class CapabilityStorage implements Capability.IStorage<DragonStateHandler
                 instance.setLevel(DragonLevel.BABY);
             else
                 instance.setLevel(DragonLevel.valueOf(level));
-            instance.setHealth(tag.getFloat("Health"));
+            instance.setHealth(tag.getFloat("health"));
+            instance.setMaxActiveAbilitySlots(tag.getInt("maxAbilities"));
+
+            instance.setAbilityInSlot(DragonSurvivalMod.ABILITIES_MAP.get(tag.getString("abilitySlot1")).create(null), 0);
+            instance.setAbilityInSlot(DragonSurvivalMod.ABILITIES_MAP.get(tag.getString("abilitySlot2")).create(null), 1);
+            instance.setAbilityInSlot(DragonSurvivalMod.ABILITIES_MAP.get(tag.getString("abilitySlot3")).create(null), 2);
+            instance.setAbilityInSlot(DragonSurvivalMod.ABILITIES_MAP.get(tag.getString("abilitySlot4")).create(null), 3);
+            instance.setAbilityInSlot(DragonSurvivalMod.ABILITIES_MAP.get(tag.getString("abilitySlot5")).create(null), 4);
         }
     }
 }

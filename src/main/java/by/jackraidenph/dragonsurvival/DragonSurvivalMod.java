@@ -1,9 +1,12 @@
 package by.jackraidenph.dragonsurvival;
 
+import by.jackraidenph.dragonsurvival.abilities.common.IDragonAbility;
+import by.jackraidenph.dragonsurvival.abilities.common.utils.AbilityType;
 import by.jackraidenph.dragonsurvival.capability.Capabilities;
 import by.jackraidenph.dragonsurvival.capability.DragonStateHandler;
 import by.jackraidenph.dragonsurvival.capability.DragonStateProvider;
-import by.jackraidenph.dragonsurvival.handlers.EntityTypesInit;
+import by.jackraidenph.dragonsurvival.handlers.AbilityTickingHandler;
+import by.jackraidenph.dragonsurvival.init.EntityTypesInit;
 import by.jackraidenph.dragonsurvival.network.*;
 import by.jackraidenph.dragonsurvival.util.ConfigurationHandler;
 import by.jackraidenph.dragonsurvival.util.DragonLevel;
@@ -14,6 +17,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.entity.Entity;
@@ -25,8 +29,10 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -35,26 +41,46 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.glfw.GLFW;
+
+import java.util.HashMap;
 
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 
-@Mod(DragonSurvivalMod.MODID)
+@Mod(DragonSurvivalMod.MOD_ID)
 public class DragonSurvivalMod {
-    public static final String MODID = "dragonsurvival";
+    public static final String MOD_ID = "dragonsurvival";
     public static final Logger LOGGER = LogManager.getLogger();
+    public static final KeyBinding ACTIVATE_ABILITY = new KeyBinding("Activates chosen ability", GLFW.GLFW_KEY_F, "Dragon Survival");
+    public static final KeyBinding TEST = new KeyBinding("TEST", GLFW.GLFW_KEY_G, "Dragon Survival");
+    public static final HashMap<String, AbilityType<? extends IDragonAbility>> ABILITIES_MAP = new HashMap<>();
     private static final String PROTOCOL_VERSION = "1";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(MODID, "main"), () -> PROTOCOL_VERSION,
+            new ResourceLocation(MOD_ID, "main"), () -> PROTOCOL_VERSION,
             PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals);
-
     private static int nextPacketId = 0;
+    private static AbilityTickingHandler HANDLER;
+
     public DragonSurvivalMod() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::setup);
+        modEventBus.addListener(this::onClientSetup);
         MinecraftForge.EVENT_BUS.addListener(this::onServerStart);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigurationHandler.SPEC);
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(getTickHandler());
+
+        //IMPORTANT TO ENSURE INITIALIZATION ORDER
+        AbilityType.init();
+    }
+
+    public static AbilityTickingHandler getTickHandler() {
+        if (HANDLER == null) {
+            HANDLER = new AbilityTickingHandler();
+            return HANDLER;
+        }
+        return HANDLER;
     }
 
     private static <T> void register(Class<T> clazz, IMessage<T> message) {
@@ -77,6 +103,8 @@ public class DragonSurvivalMod {
         register(SynchronizeNest.class, new SynchronizeNest());
         register(OpenDragonInventory.class, new OpenDragonInventory());
         register(SyncLevel.class, new SyncLevel());
+        register(ActivateAbilityInSlot.class, new ActivateAbilityInSlot());
+        register(SynchronizeDragonAbilities.class, new SynchronizeDragonAbilities());
 
         //TODO synchronize health
         CHANNEL.registerMessage(nextPacketId, SynchronizeDragonCap.class, (synchronizeDragonCap, packetBuffer) -> {
@@ -93,7 +121,9 @@ public class DragonSurvivalMod {
             DragonType type = DragonType.values()[packetBuffer.readByte()];
             boolean hiding = packetBuffer.readBoolean();
             boolean isDragon = packetBuffer.readBoolean();
-            return new SynchronizeDragonCap(id, hiding, type, level, isDragon, packetBuffer.readFloat());
+            float health = packetBuffer.readFloat();
+
+            return new SynchronizeDragonCap(id, hiding, type, level, isDragon, health);
         }, (synchronizeDragonCap, contextSupplier) -> {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> new PacketProxy().handleCapabilitySync(synchronizeDragonCap, contextSupplier));
             if (contextSupplier.get().getDirection().getReceptionSide() == LogicalSide.SERVER) {
@@ -112,6 +142,11 @@ public class DragonSurvivalMod {
         LOGGER.info("Successfully registered packets!");
         EntityTypesInit.addSpawn();
         LOGGER.info("Successfully registered entity spawns!");
+    }
+
+    private void onClientSetup(FMLClientSetupEvent clientSetupEvent) {
+        ClientRegistry.registerKeyBinding(ACTIVATE_ABILITY);
+        ClientRegistry.registerKeyBinding(TEST);
     }
 
     private void onServerStart(FMLServerStartingEvent serverStartingEvent) {

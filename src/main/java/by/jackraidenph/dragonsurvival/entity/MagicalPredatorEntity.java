@@ -2,7 +2,7 @@ package by.jackraidenph.dragonsurvival.entity;
 
 import by.jackraidenph.dragonsurvival.DragonSurvivalMod;
 import by.jackraidenph.dragonsurvival.capability.DragonStateProvider;
-import by.jackraidenph.dragonsurvival.handlers.BlockInit;
+import by.jackraidenph.dragonsurvival.init.BlockInit;
 import by.jackraidenph.dragonsurvival.network.PacketSyncXPDevour;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
@@ -74,7 +74,7 @@ public class MagicalPredatorEntity extends MonsterEntity {
     protected void onDeathUpdate() {
         super.onDeathUpdate();
         if (this.deathTime == 19) {
-            world.setBlockState(this.getPosition(), BlockInit.PREDATOR_STAR_BLOCK.getDefaultState());
+            world.setBlockState(this.getPosition(), BlockInit.predatorStarBlock.getDefaultState());
             this.spawnExplosionParticle();
         }
     }

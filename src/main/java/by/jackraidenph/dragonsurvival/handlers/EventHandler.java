@@ -1,11 +1,15 @@
 package by.jackraidenph.dragonsurvival.handlers;
 
 import by.jackraidenph.dragonsurvival.DragonSurvivalMod;
+import by.jackraidenph.dragonsurvival.abilities.common.IDragonAbility;
+import by.jackraidenph.dragonsurvival.abilities.common.ToggleableDragonAbility;
 import by.jackraidenph.dragonsurvival.capability.DragonStateHandler;
 import by.jackraidenph.dragonsurvival.capability.DragonStateProvider;
 import by.jackraidenph.dragonsurvival.containers.DragonInventoryContainer;
 import by.jackraidenph.dragonsurvival.entity.MagicalPredatorEntity;
+import by.jackraidenph.dragonsurvival.init.EntityTypesInit;
 import by.jackraidenph.dragonsurvival.util.DragonType;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.entity.merchant.villager.VillagerEntity;
@@ -101,11 +105,26 @@ public class EventHandler {
     @SubscribeEvent
     public static void onCapabilityAttachment(AttachCapabilitiesEvent<Entity> event) {
         if (event.getObject() instanceof PlayerEntity) {
-            event.addCapability(new ResourceLocation(DragonSurvivalMod.MODID, "playerstatehandler"), new DragonStateProvider());
+            event.addCapability(new ResourceLocation(DragonSurvivalMod.MOD_ID, "playerstatehandler"), new DragonStateProvider());
             DragonSurvivalMod.LOGGER.info("Successfully attached capability to the " + event.getObject().getClass().getSimpleName());
         }
     }
 
+    @SubscribeEvent
+    public static void onPlayerLeft(PlayerEvent.PlayerLoggedOutEvent event) {
+        DragonStateProvider.getCap(event.getEntity()).ifPresent(cap -> {
+            for (IDragonAbility ability : cap.getAbilitySlots())
+                if (ability instanceof ToggleableDragonAbility) {
+                    ((ToggleableDragonAbility) ability).stopAbility();
+                }
+        });
+        DragonStateProvider.getCap(Minecraft.getInstance().player).ifPresent(cap -> {
+            for (IDragonAbility ability : cap.getAbilitySlots())
+                if (ability instanceof ToggleableDragonAbility) {
+                    ((ToggleableDragonAbility) ability).stopAbility();
+                }
+        });
+    }
 
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent e) {
@@ -114,7 +133,7 @@ public class EventHandler {
             return;
 
         if (livingEntity instanceof AnimalEntity && livingEntity.world.getRandom().nextInt(30) == 0) {
-            MagicalPredatorEntity beast = EntityTypesInit.MAGICAL_BEAST.create(livingEntity.world);
+            MagicalPredatorEntity beast = EntityTypesInit.magicalPredator.create(livingEntity.world);
             livingEntity.world.addEntity(beast);
             beast.setPositionAndUpdate(livingEntity.getPosX(), livingEntity.getPosY(), livingEntity.getPosZ());
         }
@@ -130,6 +149,7 @@ public class EventHandler {
                         capNew.setMovementData(movementData.bodyYaw, movementData.headYaw, movementData.headPitch, movementData.headPos, movementData.tailPos);
                         capNew.setLevel(capOld.getLevel());
                         capNew.setType(capOld.getType());
+                        capNew.setAbilitySlotList(capOld.getAbilitySlots());
                         e.getPlayer().getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(e.getOriginal().getAttribute(SharedMonsterAttributes.MAX_HEALTH).getBaseValue());
                     }
                 }));

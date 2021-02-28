@@ -25,6 +25,6 @@ public class Enchantments {
             public Map<EquipmentSlotType, ItemStack> getEntityEquipment(LivingEntity livingEntityIn) {
                 return Collections.emptyMap();
             }
-        }.setRegistryName(DragonSurvivalMod.MODID, "test"));
+        }.setRegistryName(DragonSurvivalMod.MOD_ID, "test"));
     }
 }

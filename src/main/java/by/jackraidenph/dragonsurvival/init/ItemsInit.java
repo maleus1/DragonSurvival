@@ -1,4 +1,4 @@
-package by.jackraidenph.dragonsurvival.handlers;
+package by.jackraidenph.dragonsurvival.init;
 
 import by.jackraidenph.dragonsurvival.DragonSurvivalMod;
 import by.jackraidenph.dragonsurvival.capability.DragonStateHandler;
@@ -19,7 +19,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.network.PacketDistributor;
 
-@Mod.EventBusSubscriber(modid = DragonSurvivalMod.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = DragonSurvivalMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ItemsInit {
     public static Item heartElement;
     public static Item starBone, elderDragonBone;
@@ -56,7 +56,7 @@ public class ItemsInit {
                 return super.onItemRightClick(worldIn, playerIn, handIn);
             }
         };
-        heartElement.setRegistryName(DragonSurvivalMod.MODID, "heart_element");
+        heartElement.setRegistryName(DragonSurvivalMod.MOD_ID, "heart_element");
 
         starBone = new Item(new Item.Properties().group(BlockInit.blocks)) {
             @Override
@@ -85,9 +85,9 @@ public class ItemsInit {
 
                 return super.onItemRightClick(worldIn, playerIn, handIn);
             }
-        }.setRegistryName(DragonSurvivalMod.MODID, "star_bone");
+        }.setRegistryName(DragonSurvivalMod.MOD_ID, "star_bone");
 
-        elderDragonBone = new Item(new Item.Properties().group(BlockInit.blocks)).setRegistryName(DragonSurvivalMod.MODID, "elder_dragon_bone");
+        elderDragonBone = new Item(new Item.Properties().group(BlockInit.blocks)).setRegistryName(DragonSurvivalMod.MOD_ID, "elder_dragon_bone");
         event.getRegistry().registerAll(heartElement, starBone, elderDragonBone);
     }
 }

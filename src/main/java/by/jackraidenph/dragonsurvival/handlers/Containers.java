@@ -19,9 +19,9 @@ public class Containers {
     public static void registerContainers(RegistryEvent.Register<ContainerType<?>> register) {
         nestContainer = IForgeContainerType.create(NestContainer::new);
         IForgeRegistry<ContainerType<?>> forgeRegistry = register.getRegistry();
-        forgeRegistry.register(nestContainer.setRegistryName(DragonSurvivalMod.MODID, "dragon_nest"));
+        forgeRegistry.register(nestContainer.setRegistryName(DragonSurvivalMod.MOD_ID, "dragon_nest"));
 
         dragonContainer = IForgeContainerType.create((windowId, inv, data) -> new DragonContainer(windowId, inv, false));
-        forgeRegistry.register(dragonContainer.setRegistryName(DragonSurvivalMod.MODID, "dragon_container"));
+        forgeRegistry.register(dragonContainer.setRegistryName(DragonSurvivalMod.MOD_ID, "dragon_container"));
     }
 }

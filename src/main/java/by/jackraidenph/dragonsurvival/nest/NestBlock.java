@@ -1,7 +1,7 @@
 package by.jackraidenph.dragonsurvival.nest;
 
 import by.jackraidenph.dragonsurvival.DragonSurvivalMod;
-import by.jackraidenph.dragonsurvival.handlers.TileEntityTypesInit;
+import by.jackraidenph.dragonsurvival.init.TileEntityTypesInit;
 import by.jackraidenph.dragonsurvival.network.SynchronizeNest;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

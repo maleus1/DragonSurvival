@@ -1,22 +1,27 @@
 package by.jackraidenph.dragonsurvival.capability;
 
+import by.jackraidenph.dragonsurvival.abilities.common.IDragonAbility;
+import by.jackraidenph.dragonsurvival.abilities.common.utils.BlankDragonAbility;
 import by.jackraidenph.dragonsurvival.util.DragonLevel;
 import by.jackraidenph.dragonsurvival.util.DragonType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.Vec3d;
 
 
 public class DragonStateHandler {
+    private final DragonMovementData data = new DragonMovementData(0, 0, 0, Vec3d.ZERO, Vec3d.ZERO);
     private boolean isDragon;
     private boolean isHiding;
     private DragonType type = DragonType.NONE;
     private DragonLevel level = DragonLevel.BABY;
+    private NonNullList<IDragonAbility> abilitySlots = NonNullList.withSize(5, new BlankDragonAbility());
+    private int maxActiveAbilitySlots = 5;
     /**
      * Current health, must be equal to the player's health
      */
     private float health = level.initialHealth;
-    private final DragonMovementData data = new DragonMovementData(0, 0, 0, Vec3d.ZERO, Vec3d.ZERO);
 
     public boolean isDragon() {
         return this.isDragon;
@@ -42,12 +47,45 @@ public class DragonStateHandler {
         this.level = level;
     }
 
-    public void setHealth(float health) {
-        this.health = health;
+    public int getMaxActiveAbilitySlots() {
+        return maxActiveAbilitySlots;
+    }
+
+    public void setMaxActiveAbilitySlots(int maxActiveAbilitySlots) {
+        this.maxActiveAbilitySlots = maxActiveAbilitySlots;
+    }
+
+    public void populateAbilities(PlayerEntity playerEntity) {
+        for (IDragonAbility ability : this.abilitySlots)
+            ability.setPlayerDragon(playerEntity);
+    }
+
+    public void setAbilityInSlot(IDragonAbility ability, int slot) {
+        this.abilitySlots.set(slot, ability);
+    }
+
+    public IDragonAbility getAbilityFromSlot(int slot) {
+        if (slot > this.maxActiveAbilitySlots)
+            throw new IllegalArgumentException("Failed to set ability in the slot. The slot number is higher than the max slot count.");
+
+        return this.abilitySlots.get(slot);
+    }
+
+    public void setAbilitySlotList(NonNullList<IDragonAbility> listToSet) {
+        for (int i = 0; i < listToSet.size(); i++)
+            this.setAbilityInSlot(listToSet.get(i), i);
+    }
+
+    public NonNullList<IDragonAbility> getAbilitySlots() {
+        return this.abilitySlots;
     }
 
     public float getHealth() {
         return health;
+    }
+
+    public void setHealth(float health) {
+        this.health = health;
     }
 
     /**

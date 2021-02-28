@@ -22,7 +22,7 @@ import net.minecraftforge.fml.client.gui.widget.ExtendedButton;
 import java.util.HashMap;
 
 public class DragonAltarGUI extends Screen {
-    private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(DragonSurvivalMod.MODID, "textures/gui/dragon_altar.png");
+    private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(DragonSurvivalMod.MOD_ID, "textures/gui/dragon_altar.png");
     private final int xSize = 852 / 2;
     private final int ySize = 500 / 2;
     private int guiLeft;
@@ -55,7 +55,6 @@ public class DragonAltarGUI extends Screen {
 
         blit(startX, startY, 0, 0, 434 / 2, 496 / 2, xSize, ySize);
 
-
         if (mouseY > startY + 6 && mouseY < startY + 153) {
             if (mouseX > startX + 5 && mouseX < startX + 55) {
                 blit(startX + 6, startY + 6, 217, 0, 49, 149, xSize, ySize);
@@ -72,9 +71,13 @@ public class DragonAltarGUI extends Screen {
             if (mouseX > startX + 161 && mouseX < startX + 211) {
                 blit(startX + 162, startY + 6, 364, 0, 49, 149, xSize, ySize);
             }
-            if(mouseX>startX+5 && mouseX<startX+211) {
+            if (mouseX > startX + 5 && mouseX < startX + 211) {
                 fill(startX + 8, startY + 166, guiLeft + 210, guiTop + 242, 0xff333333);
-                String warning =TextFormatting.RED + new TranslationTextComponent( "ds.dragon_altar_warning1").getString()+ TextFormatting.RESET + new TranslationTextComponent("ds.dragon_altar_warning2").getString();
+                String warning =
+                        TextFormatting.RED +
+                                new TranslationTextComponent("ds.dragon_altar_warning_header").getString() +
+                                TextFormatting.RESET +
+                                new TranslationTextComponent("ds.dragon_altar_warning_text").getString();
                 font.drawSplitString(warning, startX + 10, startY + 153 + 20, 200, 0xffffff);
             }
         }
@@ -112,6 +115,11 @@ public class DragonAltarGUI extends Screen {
 
         addButton(new ExtendedButton(guiLeft + 162, guiTop + 6, 49, 147, "Human", b -> {
             DragonStateProvider.getCap(minecraft.player).ifPresent(playerStateHandler -> {
+                if (!playerStateHandler.isDragon()) {
+                    minecraft.player.closeScreen();
+                    minecraft.player.sendMessage(new TranslationTextComponent("ds.choice_already_human"));
+                    return;
+                }
                 playerStateHandler.setIsDragon(false);
                 playerStateHandler.setIsHiding(false);
                 playerStateHandler.setLevel(DragonLevel.BABY);
@@ -136,9 +144,11 @@ public class DragonAltarGUI extends Screen {
             cap.setType(type);
             cap.setLevel(DragonLevel.BABY);
             player.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(DragonLevel.BABY.initialHealth);
-//                    Random random = player.world.rand;
-//                    BlockPos.Mutable pos = new BlockPos.Mutable(random.nextInt(2000) - 1000, player.getPosY(), random.nextInt(2000) - 1000);
-//                    DragonSurvivalMod.INSTANCE.sendToServer(new SetRespawnPosition(pos));
-                });
+            /*Random random = player.world.rand;
+            BlockPos.Mutable pos = new BlockPos.Mutable(random.nextInt(2000) - 1000, 256, random.nextInt(2000) - 1000);
+            while (player.world.getBlockState(pos.down()).isSolid())
+                pos.setPos(pos.down());
+            DragonSurvivalMod.CHANNEL.sendToServer(new SetRespawnPosition(pos));*/
+        });
     }
 }
