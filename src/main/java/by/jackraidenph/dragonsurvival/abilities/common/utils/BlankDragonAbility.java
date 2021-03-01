@@ -1,8 +1,10 @@
 package by.jackraidenph.dragonsurvival.abilities.common.utils;
 
+import by.jackraidenph.dragonsurvival.DragonSurvivalMod;
 import by.jackraidenph.dragonsurvival.abilities.common.IDragonAbility;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
@@ -20,6 +22,11 @@ public class BlankDragonAbility implements IDragonAbility {
     @Override
     public String getId() {
         return "blank";
+    }
+
+    @Override
+    public ResourceLocation getIcon() {
+        return new ResourceLocation(DragonSurvivalMod.MOD_ID, "abilities/" + this.getId() + ".png");
     }
 
     @Override

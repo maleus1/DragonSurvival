@@ -2,7 +2,6 @@ package by.jackraidenph.dragonsurvival.handlers;
 
 import by.jackraidenph.dragonsurvival.abilities.common.IDragonAbility;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.ArrayList;
@@ -10,19 +9,26 @@ import java.util.ArrayList;
 public class AbilityTickingHandler {
 
     private ArrayList<IDragonAbility> abilitiesToTick = new ArrayList<>();
+    private ArrayList<IDragonAbility> pendingToRemoveList = new ArrayList<>();
+    private ArrayList<IDragonAbility> pendingToAddList = new ArrayList<>();
 
     public void addToTickList(IDragonAbility ability) {
-        this.abilitiesToTick.add(ability);
+        if (!this.pendingToAddList.contains(ability) && !this.abilitiesToTick.contains(ability))
+            this.pendingToAddList.add(ability);
     }
 
     public void removeFromTickList(IDragonAbility ability) {
-        this.abilitiesToTick.remove(ability);
+        this.pendingToRemoveList.remove(ability);
     }
 
     @SubscribeEvent
     public void tickAbilities(TickEvent.WorldTickEvent e) {
-        for (IDragonAbility ability : this.abilitiesToTick) {
-            ability.tick();
-        }
+        //NECESSARY TO EXCLUDE CHANCES OF ConcurrentModificationException
+        abilitiesToTick.addAll(pendingToAddList);
+        pendingToRemoveList.forEach(abilitiesToTick::remove);
+        pendingToRemoveList.clear();
+        pendingToAddList.clear();
+
+        abilitiesToTick.forEach(IDragonAbility::tick);
     }
 }

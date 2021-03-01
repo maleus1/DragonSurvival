@@ -41,7 +41,8 @@ public abstract class BasicDragonAbility implements IDragonAbility {
     }
 
     public void decreaseCooldownTimer() {
-        this.cooldownTimer--;
+        if (this.cooldownTimer > 0)
+            this.cooldownTimer--;
     }
 
     public int getCooldown() {

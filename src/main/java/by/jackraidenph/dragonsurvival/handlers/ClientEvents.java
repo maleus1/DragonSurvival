@@ -176,7 +176,7 @@ public class ClientEvents {
 
         if (modeTest == GLFW.GLFW_PRESS) {
             DragonStateProvider.getCap(Minecraft.getInstance().player).ifPresent(cap -> {
-                cap.setAbilityInSlot(AbilityType.TEST_CHARGEABLE_ABILITY_TYPE.create(Minecraft.getInstance().player), 0);
+                cap.setAbilityInSlot(AbilityType.TEST_ACTIVATED_ABILITY_TYPE.create(Minecraft.getInstance().player), 0);
                 IMessage messageSync = new SynchronizeDragonAbilities(cap.getMaxActiveAbilitySlots(), AbilityType.toTypesList(cap.getAbilitySlots()));
                 DragonSurvivalMod.CHANNEL.sendToServer(messageSync);
             });

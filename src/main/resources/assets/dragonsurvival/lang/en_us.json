@@ -22,7 +22,7 @@
 
   "_comment": "Texts",
   "ds.dragon_altar_warning_header": "WARNING:",
-  "ds.skill_cooldown_check_failure": "The skill is not ready yet!:",
+  "ds.skill_cooldown_check_failure": "The ability is not ready yet!",
   "ds.dragon_altar_warning_text": " after making your choice you will die, lose all progress and find yourself in an unknown place without any items.",
   "ds.cave_dragon_choice": "You have chosen to become a Cave dragon.",
   "ds.forest_dragon_choice": "You have chosen to become a Forest dragon.",
