@@ -41,7 +41,7 @@ public class CapabilityStorage implements Capability.IStorage<DragonStateHandler
             tag.putBoolean("isHiding", instance.isHiding());
             tag.putString("type", instance.getType().toString());
             tag.putString("level", instance.getLevel().toString());
-            tag.putFloat("health", instance.getHealth());
+
             tag.putInt("selectedAbilitySlot", instance.getSelectedAbilitySlot());
 
             tag.putString("abilitySlot1", instance.getAbilityFromSlot(0).getId());
@@ -49,6 +49,8 @@ public class CapabilityStorage implements Capability.IStorage<DragonStateHandler
             tag.putString("abilitySlot3", instance.getAbilityFromSlot(2).getId());
             tag.putString("abilitySlot4", instance.getAbilityFromSlot(3).getId());
             tag.putString("abilitySlot5", instance.getAbilityFromSlot(4).getId());
+            tag.putFloat("Health", instance.getHealth());
+            tag.putBoolean("Has wings", instance.hasWings());
         }
         return tag;
     }
@@ -67,7 +69,6 @@ public class CapabilityStorage implements Capability.IStorage<DragonStateHandler
                 instance.setLevel(DragonLevel.BABY);
             else
                 instance.setLevel(DragonLevel.valueOf(level));
-            instance.setHealth(tag.getFloat("health"));
             instance.setSelectedAbilitySlot(tag.getInt("selectedAbilitySlot"));
 
             instance.setAbilityInSlot(DragonSurvivalMod.ABILITIES_MAP.get(tag.getString("abilitySlot1")).create(null), 0);
@@ -75,6 +76,8 @@ public class CapabilityStorage implements Capability.IStorage<DragonStateHandler
             instance.setAbilityInSlot(DragonSurvivalMod.ABILITIES_MAP.get(tag.getString("abilitySlot3")).create(null), 2);
             instance.setAbilityInSlot(DragonSurvivalMod.ABILITIES_MAP.get(tag.getString("abilitySlot4")).create(null), 3);
             instance.setAbilityInSlot(DragonSurvivalMod.ABILITIES_MAP.get(tag.getString("abilitySlot5")).create(null), 4);
+            instance.setHealth(tag.getFloat("Health"));
+            instance.setHasWings(tag.getBoolean("Has wings"));
         }
     }
 }

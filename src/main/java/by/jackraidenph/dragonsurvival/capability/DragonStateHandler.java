@@ -11,7 +11,6 @@ import net.minecraft.util.math.Vec3d;
 
 
 public class DragonStateHandler {
-    private final DragonMovementData data = new DragonMovementData(0, 0, 0, Vec3d.ZERO, Vec3d.ZERO);
     private boolean isDragon;
     private boolean isHiding;
     private DragonType type = DragonType.NONE;
@@ -23,6 +22,16 @@ public class DragonStateHandler {
      * Current health, must be equal to the player's health
      */
     private float health = level.initialHealth;
+    private final DragonMovementData data = new DragonMovementData(0, 0, 0, Vec3d.ZERO, Vec3d.ZERO);
+    private boolean hasWings;
+
+    public boolean hasWings() {
+        return hasWings;
+    }
+
+    public void setHasWings(boolean hasWings) {
+        this.hasWings = hasWings;
+    }
 
     public boolean isDragon() {
         return this.isDragon;
@@ -129,31 +138,6 @@ public class DragonStateHandler {
 
     public void setType(DragonType type) {
         this.type = type;
-    }
-
-    /**
-     * TODO remove
-     * Synchronizes dragon capability data
-     *
-     * @param isServer is server side currently?
-     */
-    @Deprecated
-    public void syncCapabilityData(boolean isServer) {
-        if (isServer) {
-//            DragonSurvivalMod.CHANNEL.send(PacketDistributor.ALL.noArg(), new PacketSyncCapability(this.isDragon, this.isHiding, this.getType(), this.level));
-        } else {
-//            DragonSurvivalMod.CHANNEL.sendToServer(new PacketSyncCapability(this.isDragon, this.isHiding, this.getType(), this.level));
-        }
-    }
-
-    public void syncMovement(boolean isServer) {
-//        this.data.ifPresent(dat -> {
-//            if (isServer) {
-////                DragonSurvivalMod.CHANNEL.send(PacketDistributor.ALL.noArg(), new PacketSyncCapabilityMovement(dat));
-//            } else {
-////                DragonSurvivalMod.CHANNEL.sendToServer(new PacketSyncCapabilityMovement(dat));
-//            }
-//        });
     }
 
     public static class DragonMovementData {

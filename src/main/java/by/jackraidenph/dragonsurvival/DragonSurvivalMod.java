@@ -20,7 +20,6 @@ import com.mojang.brigadier.tree.RootCommandNode;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.ISuggestionProvider;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -84,15 +83,10 @@ public class DragonSurvivalMod {
         CHANNEL.registerMessage(nextPacketId++, clazz, message::encode, message::decode, message::handle);
     }
 
-    public static boolean isDragon(Entity entity) {
-        return DragonStateProvider.getCap(entity).filter(DragonStateHandler::isDragon).isPresent();
-    }
-
     private void setup(final FMLCommonSetupEvent event) {
         Capabilities.register();
         LOGGER.info("Successfully registered " + DragonStateHandler.class.getSimpleName() + "!");
         register(PacketSyncCapabilityMovement.class, new PacketSyncCapabilityMovement());
-        register(PacketSyncCapability.class, new PacketSyncCapability());
         register(PacketSyncXPDevour.class, new PacketSyncXPDevour());
         register(PacketSyncPredatorStats.class, new PacketSyncPredatorStats());
         register(SetRespawnPosition.class, new SetRespawnPosition());
@@ -102,6 +96,7 @@ public class DragonSurvivalMod {
         register(SyncLevel.class, new SyncLevel());
         register(ActivateAbilityInSlot.class, new ActivateAbilityInSlot());
         register(SynchronizeDragonAbilities.class, new SynchronizeDragonAbilities());
+        register(ToggleWings.class, new ToggleWings());
 
         //TODO synchronize health
         CHANNEL.registerMessage(nextPacketId, SynchronizeDragonCap.class, (synchronizeDragonCap, packetBuffer) -> {
@@ -111,6 +106,7 @@ public class DragonSurvivalMod {
             packetBuffer.writeBoolean(synchronizeDragonCap.hiding);
             packetBuffer.writeBoolean(synchronizeDragonCap.isDragon);
             packetBuffer.writeFloat(synchronizeDragonCap.health);
+            packetBuffer.writeBoolean(synchronizeDragonCap.hasWings);
 
         }, packetBuffer -> {
             int id = packetBuffer.readInt();
@@ -120,7 +116,7 @@ public class DragonSurvivalMod {
             boolean isDragon = packetBuffer.readBoolean();
             float health = packetBuffer.readFloat();
 
-            return new SynchronizeDragonCap(id, hiding, type, level, isDragon, health);
+            return new SynchronizeDragonCap(id, hiding, type, level, isDragon, packetBuffer.readFloat(), packetBuffer.readBoolean());
         }, (synchronizeDragonCap, contextSupplier) -> {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> new PacketProxy().handleCapabilitySync(synchronizeDragonCap, contextSupplier));
             if (contextSupplier.get().getDirection().getReceptionSide() == LogicalSide.SERVER) {
@@ -132,6 +128,7 @@ public class DragonSurvivalMod {
                     dragonStateHandler.setIsDragon(synchronizeDragonCap.isDragon);
                     dragonStateHandler.setType(synchronizeDragonCap.dragonType);
                     dragonStateHandler.setHealth(synchronizeDragonCap.health);
+                    dragonStateHandler.setHasWings(synchronizeDragonCap.hasWings);
                 });
             }
         });
@@ -159,7 +156,7 @@ public class DragonSurvivalMod {
                 dragonStateHandler.setLevel(dragonLevel, serverPlayerEntity);
                 dragonStateHandler.setIsDragon(true);
                 //works
-                CHANNEL.send(PacketDistributor.ALL.noArg(), new SynchronizeDragonCap(serverPlayerEntity.getEntityId(), false, dragonType1, dragonLevel, true, 20));
+                CHANNEL.send(PacketDistributor.ALL.noArg(), new SynchronizeDragonCap(serverPlayerEntity.getEntityId(), false, dragonType1, dragonLevel, true, 20, false));
             });
             return 1;
         }).build();

@@ -38,7 +38,6 @@ import java.util.UUID;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientModEvents {
-    public static final String SKINS = "https://raw.githubusercontent.com/DragonSurvivalTeam/DragonSurvival/master/src/test/resources/";
     /**
      * Whether all three custom skins exist
      */
@@ -46,6 +45,10 @@ public class ClientModEvents {
     public static ResourceLocation customNewbornSkin;
     public static ResourceLocation customYoungSkin;
     public static ResourceLocation customAdultSkin;
+
+    public static KeyBinding TOGGLE_WINGS;
+
+    public static final String SKINS = "https://raw.githubusercontent.com/DragonSurvivalTeam/DragonSurvival/master/src/test/resources/";
     public static final KeyBinding ACTIVATE_ABILITY = new KeyBinding("Activates chosen ability", GLFW.GLFW_KEY_F, "Dragon Survival");
     public static final KeyBinding TEST = new KeyBinding("TEST", GLFW.GLFW_KEY_G, "Dragon Survival");
 
@@ -71,6 +74,9 @@ public class ClientModEvents {
 
         ScreenManager.registerFactory(Containers.nestContainer, NestScreen::new);
         ScreenManager.registerFactory(Containers.dragonContainer, DragonScreen::new);
+
+        TOGGLE_WINGS = new KeyBinding("Toggle wings", GLFW.GLFW_KEY_G, "Dragon Survival");
+        ClientRegistry.registerKeyBinding(TOGGLE_WINGS);
 
         ClientRegistry.registerKeyBinding(ACTIVATE_ABILITY);
         ClientRegistry.registerKeyBinding(TEST);

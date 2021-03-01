@@ -7,34 +7,27 @@ import net.minecraft.client.renderer.Quaternion;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.MathHelper;
 
-public class DragonModel extends EntityModel<Entity> {
+public class DragonModel2 extends EntityModel<Entity> {
     public final ModelRenderer LeftFrontLeg;
     public final ModelRenderer Forearm1;
     public final ModelRenderer Elbow1;
+    private final ModelRenderer hand1;
     public final ModelRenderer RightFrontLeg;
     public final ModelRenderer Forearm2;
     public final ModelRenderer Elbow2;
+    private final ModelRenderer hand2;
     public final ModelRenderer Leg3;
     public final ModelRenderer Forearm3;
     public final ModelRenderer Elbow3;
+    private final ModelRenderer hand3;
     public final ModelRenderer Leg4;
     public final ModelRenderer Forearm4;
     public final ModelRenderer Elbow4;
+    private final ModelRenderer hand4;
     public final ModelRenderer main;
     public final ModelRenderer main_body;
-    public final ModelRenderer NeckandHead;
-    public final ModelRenderer NeckandMain;
-    public final ModelRenderer Neckand_3;
-    public final ModelRenderer Neckand_2;
-    public final ModelRenderer Neckand_1;
-    public final ModelRenderer Head;
-    private final ModelRenderer hand1;
-    private final ModelRenderer hand2;
-    private final ModelRenderer hand3;
-    private final ModelRenderer hand4;
     private final ModelRenderer main_pelvis;
     private final ModelRenderer Tail1;
     private final ModelRenderer Tail_5;
@@ -43,6 +36,12 @@ public class DragonModel extends EntityModel<Entity> {
     private final ModelRenderer Tail4;
     private final ModelRenderer Tail5;
     private final ModelRenderer Tail_0;
+    public final ModelRenderer NeckandHead;
+    public final ModelRenderer NeckandMain;
+    public final ModelRenderer Neckand_3;
+    public final ModelRenderer Neckand_2;
+    public final ModelRenderer Neckand_1;
+    public final ModelRenderer Head;
     private final ModelRenderer central_horn;
     private final ModelRenderer Horn_left;
     private final ModelRenderer bone25;
@@ -56,10 +55,9 @@ public class DragonModel extends EntityModel<Entity> {
     private final ModelRenderer lower_jaw1;
     private final ModelRenderer teeth2;
     private final ModelRenderer muscles;
-    private final ModelRenderer[] neckParts;
     public boolean firstPerson;
 
-    public DragonModel(boolean firstPerson) {
+    public DragonModel2(boolean firstPerson) {
         this.firstPerson = firstPerson;
         textureWidth = 128;
         textureHeight = 128;
@@ -370,42 +368,33 @@ public class DragonModel extends EntityModel<Entity> {
         setRotationAngle(muscles, -0.2182F, 0.0F, 0.0F);
         muscles.setTextureOffset(0, 25).addBox(0.91F, 3.3305F, -21.1542F, 1.0F, 5.0F, 4.0F, 0.0F, false);
         muscles.setTextureOffset(0, 40).addBox(-1.91F, 3.3305F, -21.1542F, 1.0F, 5.0F, 4.0F, 0.0F, false);
-
-        neckParts = new ModelRenderer[]{NeckandHead, Neckand_3, Neckand_2, Neckand_1};
     }
 
     @Override
     public void setRotationAngles(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+        if (entity.onGround || entity.isSwimming()) {
+            LeftFrontLeg.rotateAngleX = Functions.getDefaultXRightLimbRotation(limbSwing, limbSwingAmount) / 2;
 
-        PlayerEntity playerEntity = (PlayerEntity) entity;
+            RightFrontLeg.rotateAngleX = Functions.getDefaultXLeftLimbRotation(limbSwing, limbSwingAmount) / 2;
 
-        LeftFrontLeg.rotateAngleX = Functions.getDefaultXRightLimbRotation(limbSwing, limbSwingAmount) / 2;
+            Leg3.rotateAngleX = Functions.getDefaultXLeftLimbRotation(limbSwing, limbSwingAmount) / 2;
 
-        RightFrontLeg.rotateAngleX = Functions.getDefaultXLeftLimbRotation(limbSwing, limbSwingAmount) / 2;
+            Leg4.rotateAngleX = Functions.getDefaultXRightLimbRotation(limbSwing, limbSwingAmount) / 2;
 
-        Leg3.rotateAngleX = Functions.getDefaultXLeftLimbRotation(limbSwing, limbSwingAmount) / 2;
+            float speed = ageInTicks / 20;
+            //start
+            Tail1.rotateAngleX = MathHelper.cos(speed) / 6;
+            Tail2.rotateAngleX = MathHelper.sin(speed) / 12;
+            Tail3.rotateAngleX = MathHelper.cos(speed) / 12;
+            Tail4.rotateAngleX = MathHelper.sin(speed) / 12;
+            Tail5.rotateAngleX = MathHelper.cos(speed) / 12;
 
-        Leg4.rotateAngleX = Functions.getDefaultXRightLimbRotation(limbSwing, limbSwingAmount) / 2;
-
-        float speed = ageInTicks / 20;
-        //start
-        Tail1.rotateAngleX = MathHelper.cos(speed) / 6;
-        Tail2.rotateAngleX = MathHelper.sin(speed) / 12;
-        Tail3.rotateAngleX = MathHelper.cos(speed) / 12;
-        Tail4.rotateAngleX = MathHelper.sin(speed) / 12;
-        Tail5.rotateAngleX = MathHelper.cos(speed) / 12;
-
-        /*float actualHeadYaw = playerEntity.rotationYawHead - playerEntity.renderYawOffset;
-        float yawPerSegment = 45f / neckParts.length - 1;
-        int segmentsToRotate = (int) MathHelper.clamp(Math.floor(Math.abs(actualHeadYaw / yawPerSegment)), 0, neckParts.length-1);
-        float radiansToRotate = (float) -Math.toRadians(actualHeadYaw % (45f / neckParts.length));
-        neckParts[segmentsToRotate].rotateAngleZ = radiansToRotate;*/
-
-        lower_jaw.rotateAngleX = MathHelper.sin(speed * 1.5f) / 12 + Functions.degreesToRadians(5);
-        /*if (entity.getMotion().x != 0 || entity.getMotion().z != 0)
-            Neckand_3.rotateAngleZ = 0;
+            lower_jaw.rotateAngleX = MathHelper.sin(speed * 1.5f) / 12 + Functions.degreesToRadians(5);
+        }
+        if(entity.getMotion().x!=0 || entity.getMotion().z!=0)
+            Neckand_3.rotateAngleZ=0;
 //        else
-//            Neckand_3.rotateAngleZ = -(float) ((netHeadYaw) * Math.PI / 180.0F);*/
+//            Neckand_3.rotateAngleZ = -(float) ((netHeadYaw) * Math.PI / 180.0F);
     }
 
     @Override
