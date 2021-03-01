@@ -29,14 +29,14 @@ public class SynchronizationController {
         DragonStateProvider.getCap(player).ifPresent(cap -> {
             cap.populateAbilities(player);
             DragonSurvivalMod.CHANNEL.send(PacketDistributor.ALL.noArg(), new SynchronizeDragonCap(player.getEntityId(), cap.isHiding(), cap.getType(), cap.getLevel(), cap.isDragon(), cap.getHealth()));
-            DragonSurvivalMod.CHANNEL.send(PacketDistributor.ALL.noArg(), new SynchronizeDragonAbilities(cap.getAbilitySlots().size(), AbilityType.toTypesList(cap.getAbilitySlots())));
+            DragonSurvivalMod.CHANNEL.send(PacketDistributor.ALL.noArg(), new SynchronizeDragonAbilities(cap.getAbilitySlots().size(), cap.getSelectedAbilitySlot(), AbilityType.toTypesList(cap.getAbilitySlots())));
             DragonSurvivalMod.LOGGER.info("{} {}", player.getDisplayName().getString(), cap.getLevel());
         });
         //receive capability from others
         loggedInEvent.getPlayer().getServer().getPlayerList().getPlayers().forEach(serverPlayerEntity -> {
             DragonStateProvider.getCap(serverPlayerEntity).ifPresent(dragonStateHandler -> {
                 DragonSurvivalMod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new SynchronizeDragonCap(serverPlayerEntity.getEntityId(), dragonStateHandler.isHiding(), dragonStateHandler.getType(), dragonStateHandler.getLevel(), dragonStateHandler.isDragon(), dragonStateHandler.getHealth()));
-                DragonSurvivalMod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new SynchronizeDragonAbilities(dragonStateHandler.getAbilitySlots().size(), AbilityType.toTypesList(dragonStateHandler.getAbilitySlots())));
+                DragonSurvivalMod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new SynchronizeDragonAbilities(dragonStateHandler.getAbilitySlots().size(), dragonStateHandler.getSelectedAbilitySlot(), AbilityType.toTypesList(dragonStateHandler.getAbilitySlots())));
             });
         });
     }

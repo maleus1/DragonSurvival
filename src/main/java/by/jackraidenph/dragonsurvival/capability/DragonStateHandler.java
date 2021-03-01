@@ -18,6 +18,7 @@ public class DragonStateHandler {
     private DragonLevel level = DragonLevel.BABY;
     private NonNullList<IDragonAbility> abilitySlots = NonNullList.withSize(5, new BlankDragonAbility());
     private int maxActiveAbilitySlots = 5;
+    private int selectedAbilitySlot = 0;
     /**
      * Current health, must be equal to the player's health
      */
@@ -51,10 +52,6 @@ public class DragonStateHandler {
         return maxActiveAbilitySlots;
     }
 
-    public void setMaxActiveAbilitySlots(int maxActiveAbilitySlots) {
-        this.maxActiveAbilitySlots = maxActiveAbilitySlots;
-    }
-
     public void populateAbilities(PlayerEntity playerEntity) {
         for (IDragonAbility ability : this.abilitySlots)
             ability.setPlayerDragon(playerEntity);
@@ -78,6 +75,14 @@ public class DragonStateHandler {
 
     public NonNullList<IDragonAbility> getAbilitySlots() {
         return this.abilitySlots;
+    }
+
+    public int getSelectedAbilitySlot() {
+        return this.selectedAbilitySlot;
+    }
+
+    public void setSelectedAbilitySlot(int newSlot) {
+        this.selectedAbilitySlot = newSlot;
     }
 
     public float getHealth() {

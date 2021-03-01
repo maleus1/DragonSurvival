@@ -13,21 +13,24 @@ import java.util.function.Supplier;
 
 public class SynchronizeDragonAbilities implements IMessage<SynchronizeDragonAbilities> {
 
-    public NonNullList<AbilityType> abilityTypes;
-    int size;
+    private NonNullList<AbilityType> abilityTypes;
+    private int size;
+    private int selectedSlot;
 
     public SynchronizeDragonAbilities() {
 
     }
 
-    public SynchronizeDragonAbilities(int size, NonNullList<AbilityType> abilityTypes) {
+    public SynchronizeDragonAbilities(int size, int selectedSlot, NonNullList<AbilityType> abilityTypes) {
         this.size = size;
         this.abilityTypes = abilityTypes;
+        this.selectedSlot = selectedSlot;
     }
 
     @Override
     public void encode(SynchronizeDragonAbilities message, PacketBuffer buffer) {
         buffer.writeInt(message.size);
+        buffer.writeInt(message.selectedSlot);
         for (AbilityType abilityType : message.abilityTypes) {
             buffer.writeString(abilityType.getId());
         }
@@ -37,24 +40,25 @@ public class SynchronizeDragonAbilities implements IMessage<SynchronizeDragonAbi
     public SynchronizeDragonAbilities decode(PacketBuffer buffer) {
         NonNullList<AbilityType> abilities = NonNullList.create();
         int size = buffer.readInt();
+        int selectedSlot = buffer.readInt();
         for (int i = 0; i < size; i++)
             abilities.add(i, DragonSurvivalMod.ABILITIES_MAP.get(buffer.readString()));
-        return new SynchronizeDragonAbilities(size, abilities);
+        return new SynchronizeDragonAbilities(size, selectedSlot, abilities);
     }
 
     @Override
     public void handle(SynchronizeDragonAbilities message, Supplier<NetworkEvent.Context> supplier) {
 
-        if (supplier.get().getDirection().getReceptionSide().isClient())
+        if (supplier.get().getDirection().getReceptionSide().isClient() && (Minecraft.getInstance().player != null))
             DragonStateProvider.getCap(Minecraft.getInstance().player).ifPresent(cap -> {
-                cap.setMaxActiveAbilitySlots(message.size);
+                cap.setSelectedAbilitySlot(message.selectedSlot);
                 cap.setAbilitySlotList(AbilityType.toAbilityList(Minecraft.getInstance().player, message.abilityTypes));
             });
 
         ServerPlayerEntity playerEntity = supplier.get().getSender();
         if (playerEntity != null)
             DragonStateProvider.getCap(playerEntity).ifPresent(cap -> {
-                cap.setMaxActiveAbilitySlots(message.size);
+                cap.setSelectedAbilitySlot(message.selectedSlot);
                 cap.setAbilitySlotList(AbilityType.toAbilityList(supplier.get().getSender(), message.abilityTypes));
             });
 

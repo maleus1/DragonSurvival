@@ -52,8 +52,6 @@ import static net.minecraft.command.Commands.literal;
 public class DragonSurvivalMod {
     public static final String MOD_ID = "dragonsurvival";
     public static final Logger LOGGER = LogManager.getLogger();
-    public static final KeyBinding ACTIVATE_ABILITY = new KeyBinding("Activates chosen ability", GLFW.GLFW_KEY_F, "Dragon Survival");
-    public static final KeyBinding TEST = new KeyBinding("TEST", GLFW.GLFW_KEY_G, "Dragon Survival");
     public static final HashMap<String, AbilityType<? extends IDragonAbility>> ABILITIES_MAP = new HashMap<>();
     private static final String PROTOCOL_VERSION = "1";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
@@ -65,7 +63,6 @@ public class DragonSurvivalMod {
     public DragonSurvivalMod() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::setup);
-        modEventBus.addListener(this::onClientSetup);
         MinecraftForge.EVENT_BUS.addListener(this::onServerStart);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigurationHandler.SPEC);
         MinecraftForge.EVENT_BUS.register(this);
@@ -142,11 +139,6 @@ public class DragonSurvivalMod {
         LOGGER.info("Successfully registered packets!");
         EntityTypesInit.addSpawn();
         LOGGER.info("Successfully registered entity spawns!");
-    }
-
-    private void onClientSetup(FMLClientSetupEvent clientSetupEvent) {
-        ClientRegistry.registerKeyBinding(ACTIVATE_ABILITY);
-        ClientRegistry.registerKeyBinding(TEST);
     }
 
     private void onServerStart(FMLServerStartingEvent serverStartingEvent) {

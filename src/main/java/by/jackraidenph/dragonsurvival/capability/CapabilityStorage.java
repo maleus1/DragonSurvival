@@ -42,7 +42,7 @@ public class CapabilityStorage implements Capability.IStorage<DragonStateHandler
             tag.putString("type", instance.getType().toString());
             tag.putString("level", instance.getLevel().toString());
             tag.putFloat("health", instance.getHealth());
-            tag.putInt("maxAbilities", instance.getMaxActiveAbilitySlots());
+            tag.putInt("selectedAbilitySlot", instance.getSelectedAbilitySlot());
 
             tag.putString("abilitySlot1", instance.getAbilityFromSlot(0).getId());
             tag.putString("abilitySlot2", instance.getAbilityFromSlot(1).getId());
@@ -68,7 +68,7 @@ public class CapabilityStorage implements Capability.IStorage<DragonStateHandler
             else
                 instance.setLevel(DragonLevel.valueOf(level));
             instance.setHealth(tag.getFloat("health"));
-            instance.setMaxActiveAbilitySlots(tag.getInt("maxAbilities"));
+            instance.setSelectedAbilitySlot(tag.getInt("selectedAbilitySlot"));
 
             instance.setAbilityInSlot(DragonSurvivalMod.ABILITIES_MAP.get(tag.getString("abilitySlot1")).create(null), 0);
             instance.setAbilityInSlot(DragonSurvivalMod.ABILITIES_MAP.get(tag.getString("abilitySlot2")).create(null), 1);

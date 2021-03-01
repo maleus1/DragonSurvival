@@ -10,10 +10,12 @@ public abstract class BasicDragonAbility implements IDragonAbility {
     private PlayerEntity playerDragon;
     private AbilityType type;
     private int cooldownTimer;
+    private ResourceLocation iconTexture;
 
     public BasicDragonAbility(AbilityType<? extends IDragonAbility> type, PlayerEntity playerDragon) {
         this.playerDragon = playerDragon;
         this.type = type;
+        this.iconTexture = new ResourceLocation(DragonSurvivalMod.MOD_ID, "textures/ability/" + this.getId() + ".png");
     }
 
     @Override
@@ -64,6 +66,6 @@ public abstract class BasicDragonAbility implements IDragonAbility {
 
     @Override
     public ResourceLocation getIcon() {
-        return new ResourceLocation(DragonSurvivalMod.MOD_ID, "abilities/" + this.getId() + ".png");
+        return this.iconTexture;
     }
 }

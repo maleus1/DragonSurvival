@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.NativeImage;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -26,6 +27,7 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import org.lwjgl.glfw.GLFW;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,6 +38,7 @@ import java.util.UUID;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientModEvents {
+    public static final String SKINS = "https://raw.githubusercontent.com/DragonSurvivalTeam/DragonSurvival/master/src/test/resources/";
     /**
      * Whether all three custom skins exist
      */
@@ -43,8 +46,8 @@ public class ClientModEvents {
     public static ResourceLocation customNewbornSkin;
     public static ResourceLocation customYoungSkin;
     public static ResourceLocation customAdultSkin;
-
-    public static final String SKINS = "https://raw.githubusercontent.com/DragonSurvivalTeam/DragonSurvival/master/src/test/resources/";
+    public static final KeyBinding ACTIVATE_ABILITY = new KeyBinding("Activates chosen ability", GLFW.GLFW_KEY_F, "Dragon Survival");
+    public static final KeyBinding TEST = new KeyBinding("TEST", GLFW.GLFW_KEY_G, "Dragon Survival");
 
     @SubscribeEvent
     public static void onTextureStitchEvent(TextureStitchEvent.Pre event) {
@@ -52,6 +55,10 @@ public class ClientModEvents {
         event.addSprite(new ResourceLocation(DragonSurvivalMod.MOD_ID, "te/star/wind"));
         event.addSprite(new ResourceLocation(DragonSurvivalMod.MOD_ID, "te/star/open_eye"));
         event.addSprite(new ResourceLocation(DragonSurvivalMod.MOD_ID, "te/star/wind_vertical"));
+
+        for (String abilityTypeID : DragonSurvivalMod.ABILITIES_MAP.keySet())
+            event.addSprite(new ResourceLocation(DragonSurvivalMod.MOD_ID, "ability/" + abilityTypeID));
+
         DragonSurvivalMod.LOGGER.info("Successfully added sprites!");
     }
 
@@ -64,6 +71,9 @@ public class ClientModEvents {
 
         ScreenManager.registerFactory(Containers.nestContainer, NestScreen::new);
         ScreenManager.registerFactory(Containers.dragonContainer, DragonScreen::new);
+
+        ClientRegistry.registerKeyBinding(ACTIVATE_ABILITY);
+        ClientRegistry.registerKeyBinding(TEST);
     }
 
     /**

@@ -21,11 +21,13 @@ import net.minecraft.client.GameSettings;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.entity.LivingRenderer;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -42,6 +44,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -64,6 +67,7 @@ public class ClientEvents {
     static HashMultimap<UUID, ResourceLocation> skinCache = HashMultimap.create(1, 3);
     static HashMultimap<String, ResourceLocation> skinCacheForName = HashMultimap.create(1, 3);
     static ResourceLocation HUDTextures = new ResourceLocation(DragonSurvivalMod.MOD_ID, "textures/gui/dragon_hud.png");
+    static ResourceLocation HUDAbilities = new ResourceLocation(DragonSurvivalMod.MOD_ID, "textures/gui/abilities_hud.png");
 
     static {
         firstPersonModel.Head.showModel = false;
@@ -150,14 +154,14 @@ public class ClientEvents {
                 (!DragonSurvivalMod.isDragon(Minecraft.getInstance().player)))
             return;
 
-        byte modeAbility = Functions.getKeyMode(DragonSurvivalMod.ACTIVATE_ABILITY);
-        byte modeTest = Functions.getKeyMode(DragonSurvivalMod.TEST);
-        int slot = 0;
+        PlayerEntity playerEntity = Minecraft.getInstance().player;
+
+        byte modeAbility = Functions.getKeyMode(ClientModEvents.ACTIVATE_ABILITY);
+        byte modeTest = Functions.getKeyMode(ClientModEvents.TEST);
+        int slot = DragonStateProvider.getCap(playerEntity).map(DragonStateHandler::getSelectedAbilitySlot).orElse(0);
 
         IMessage message = new ActivateAbilityInSlot(slot, modeAbility);
         DragonSurvivalMod.CHANNEL.sendToServer(message);
-
-        PlayerEntity playerEntity = Minecraft.getInstance().player;
 
         DragonStateProvider.getCap(playerEntity).ifPresent(dragonStateHandler -> {
             IDragonAbility ability = dragonStateHandler.getAbilityFromSlot(slot);
@@ -177,10 +181,46 @@ public class ClientEvents {
         if (modeTest == GLFW.GLFW_PRESS) {
             DragonStateProvider.getCap(Minecraft.getInstance().player).ifPresent(cap -> {
                 cap.setAbilityInSlot(AbilityType.TEST_ACTIVATED_ABILITY_TYPE.create(Minecraft.getInstance().player), 0);
-                IMessage messageSync = new SynchronizeDragonAbilities(cap.getMaxActiveAbilitySlots(), AbilityType.toTypesList(cap.getAbilitySlots()));
+                IMessage messageSync = new SynchronizeDragonAbilities(cap.getMaxActiveAbilitySlots(), cap.getSelectedAbilitySlot(), AbilityType.toTypesList(cap.getAbilitySlots()));
                 DragonSurvivalMod.CHANNEL.sendToServer(messageSync);
             });
         }
+    }
+
+    @SubscribeEvent
+    public static void renderAbilitySlots(RenderGameOverlayEvent.Post event) {
+
+        PlayerEntity playerEntity = Minecraft.getInstance().player;
+
+        if ((playerEntity == null) || !DragonSurvivalMod.isDragon(playerEntity))
+            return;
+
+        DragonStateProvider.getCap(playerEntity).ifPresent(cap -> {
+            if (event.getType() == RenderGameOverlayEvent.ElementType.HOTBAR) {
+
+                GL11.glPushMatrix();
+                GL11.glEnable(GL11.GL_BLEND);
+                GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
+                TextureManager textureManager = Minecraft.getInstance().getTextureManager();
+                MainWindow window = Minecraft.getInstance().getMainWindow();
+
+                GL11.glTranslated(0.0d, 0.125d, 0.0d);
+
+                for (int i = 0; i < cap.getMaxActiveAbilitySlots(); i++) {
+                    textureManager.bindTexture(cap.getAbilityFromSlot(i).getIcon());
+                    Screen.blit(window.getScaledWidth() - 20 * (5 - i) + 1, window.getScaledHeight() - 19, 1, 0, 0, 16, 16, 16, 16);
+                }
+
+                textureManager.bindTexture(HUDAbilities);
+                Screen.blit(window.getScaledWidth() - 102, window.getScaledHeight() - 22, 0, 0, 0, 102, 21, 256, 256);
+                Screen.blit(window.getScaledWidth() - 21 * (5 - cap.getSelectedAbilitySlot()) + 2, window.getScaledHeight() - 23, 2, 0, 22, 24, 24, 256, 256);
+
+
+                GL11.glDisable(GL11.GL_BLEND);
+                GL11.glPopMatrix();
+            }
+        });
     }
 
     @SubscribeEvent
