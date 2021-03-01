@@ -22,7 +22,7 @@ public class ShaderWrappedRenderLayer extends RenderType {
     private final ShaderCallback cb;
 
     public ShaderWrappedRenderLayer(ShaderHelper.BotaniaShader shader, @Nullable ShaderCallback cb, RenderType delegate) {
-        super(DragonSurvivalMod.MOD_ID + ":" + delegate.toString() + "_with_" + shader.name(), delegate.getVertexFormat(), delegate.getDrawMode(), delegate.getBufferSize(), delegate.isUseDelegate(), true,
+        super(DragonSurvivalMod.MODID + ":" + delegate.toString() + "_with_" + shader.name(), delegate.getVertexFormat(), delegate.getDrawMode(), delegate.getBufferSize(), delegate.isUseDelegate(), true,
                 () -> {
                     delegate.setupRenderState();
                     ShaderHelper.useShader(shader, cb);

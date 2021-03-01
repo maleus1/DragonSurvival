@@ -10,7 +10,6 @@ import by.jackraidenph.dragonsurvival.capability.DragonStateProvider;
 import by.jackraidenph.dragonsurvival.models.DragonModel;
 import by.jackraidenph.dragonsurvival.network.ActivateAbilityInSlot;
 import by.jackraidenph.dragonsurvival.network.IMessage;
-import by.jackraidenph.dragonsurvival.models.DragonModel2;
 import by.jackraidenph.dragonsurvival.models.Wings;
 import by.jackraidenph.dragonsurvival.network.OpenDragonInventory;
 import by.jackraidenph.dragonsurvival.network.SynchronizeDragonAbilities;
@@ -68,8 +67,8 @@ public class ClientEvents {
     static HashMap<String, Boolean> warningsForName = new HashMap<>();
     static HashMultimap<UUID, ResourceLocation> skinCache = HashMultimap.create(1, 3);
     static HashMultimap<String, ResourceLocation> skinCacheForName = HashMultimap.create(1, 3);
-    static ResourceLocation HUDTextures = new ResourceLocation(DragonSurvivalMod.MOD_ID, "textures/gui/dragon_hud.png");
-    static ResourceLocation HUDAbilities = new ResourceLocation(DragonSurvivalMod.MOD_ID, "textures/gui/abilities_hud.png");
+    static ResourceLocation HUDTextures = new ResourceLocation(DragonSurvivalMod.MODID, "textures/gui/dragon_hud.png");
+    static ResourceLocation HUDAbilities = new ResourceLocation(DragonSurvivalMod.MODID, "textures/gui/abilities_hud.png");
 
     public static Wings wings = new Wings();
 
@@ -112,11 +111,11 @@ public class ClientEvents {
                 setArmorVisibility(firstPersonArmor, player);
 
 //                eventMatrixStack.scale(1.4f, 1.4f, 1.4f);
-                ResourceLocation chestplate = new ResourceLocation(DragonSurvivalMod.MOD_ID, constructArmorTexture(player, EquipmentSlotType.CHEST));
+                ResourceLocation chestplate = new ResourceLocation(DragonSurvivalMod.MODID, constructArmorTexture(player, EquipmentSlotType.CHEST));
                 firstPersonArmor.render(eventMatrixStack, buffers.getBuffer(RenderType.getEntityTranslucentCull(chestplate)), light, packedOverlay, partialTicks, playerYaw, playerPitch, 1);
-                ResourceLocation legs = new ResourceLocation(DragonSurvivalMod.MOD_ID, constructArmorTexture(player, EquipmentSlotType.LEGS));
+                ResourceLocation legs = new ResourceLocation(DragonSurvivalMod.MODID, constructArmorTexture(player, EquipmentSlotType.LEGS));
                 firstPersonArmor.render(eventMatrixStack, buffers.getBuffer(RenderType.getEntityTranslucentCull(legs)), light, packedOverlay, partialTicks, playerYaw, playerPitch, 1);
-                ResourceLocation boots = new ResourceLocation(DragonSurvivalMod.MOD_ID, constructArmorTexture(player, EquipmentSlotType.FEET));
+                ResourceLocation boots = new ResourceLocation(DragonSurvivalMod.MODID, constructArmorTexture(player, EquipmentSlotType.FEET));
                 firstPersonArmor.render(eventMatrixStack, buffers.getBuffer(RenderType.getEntityTranslucentCull(boots)), light, packedOverlay, partialTicks, playerYaw, playerPitch, 1);
                 eventMatrixStack.translate(0, 0, 0.15);
                 eventMatrixStack.pop();
@@ -155,7 +154,7 @@ public class ClientEvents {
         if ((Minecraft.getInstance().player == null) ||
                 (Minecraft.getInstance().world == null) ||
                 (clientTickEvent.phase != TickEvent.Phase.END) ||
-                (!DragonSurvivalMod.isDragon(Minecraft.getInstance().player)))
+                (!DragonStateProvider.isDragon(Minecraft.getInstance().player)))
             return;
 
         PlayerEntity playerEntity = Minecraft.getInstance().player;
@@ -196,7 +195,7 @@ public class ClientEvents {
 
         PlayerEntity playerEntity = Minecraft.getInstance().player;
 
-        if ((playerEntity == null) || !DragonSurvivalMod.isDragon(playerEntity))
+        if ((playerEntity == null) || !DragonStateProvider.isDragon(playerEntity))
             return;
 
         DragonStateProvider.getCap(playerEntity).ifPresent(cap -> {
@@ -393,7 +392,7 @@ public class ClientEvents {
         }
         texture += ".png";
 
-        return new ResourceLocation(DragonSurvivalMod.MOD_ID, texture);
+        return new ResourceLocation(DragonSurvivalMod.MODID, texture);
 
     }
 

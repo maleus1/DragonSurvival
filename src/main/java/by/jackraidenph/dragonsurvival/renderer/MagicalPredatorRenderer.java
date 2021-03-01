@@ -16,16 +16,16 @@ import java.util.List;
 public class MagicalPredatorRenderer extends MobRenderer<MagicalPredatorEntity, MagicalPredatorModel> {
 
     public static List<ResourceLocation> MAGICAL_BEAST_TEXTURES = new ArrayList<>(Arrays.asList(
-            new ResourceLocation(DragonSurvivalMod.MOD_ID, "textures/magical_beast/magical_predator_dark.png"),
-            new ResourceLocation(DragonSurvivalMod.MOD_ID, "textures/magical_beast/magical_predator_dark_broken.png"),
-            new ResourceLocation(DragonSurvivalMod.MOD_ID, "textures/magical_beast/magical_predator_grass.png"),
-            new ResourceLocation(DragonSurvivalMod.MOD_ID, "textures/magical_beast/magical_predator_gray.png"),
-            new ResourceLocation(DragonSurvivalMod.MOD_ID, "textures/magical_beast/magical_predator_green.png"),
-            new ResourceLocation(DragonSurvivalMod.MOD_ID, "textures/magical_beast/magical_predator_jungle.png"),
-            new ResourceLocation(DragonSurvivalMod.MOD_ID, "textures/magical_beast/magical_predator_jungle_flowers.png"),
-            new ResourceLocation(DragonSurvivalMod.MOD_ID, "textures/magical_beast/magical_predator_light.png"),
-            new ResourceLocation(DragonSurvivalMod.MOD_ID, "textures/magical_beast/magical_predator_sand.png"),
-            new ResourceLocation(DragonSurvivalMod.MOD_ID, "textures/magical_beast/magical_predator_zombie.png")
+            new ResourceLocation(DragonSurvivalMod.MODID, "textures/magical_beast/magical_predator_dark.png"),
+            new ResourceLocation(DragonSurvivalMod.MODID, "textures/magical_beast/magical_predator_dark_broken.png"),
+            new ResourceLocation(DragonSurvivalMod.MODID, "textures/magical_beast/magical_predator_grass.png"),
+            new ResourceLocation(DragonSurvivalMod.MODID, "textures/magical_beast/magical_predator_gray.png"),
+            new ResourceLocation(DragonSurvivalMod.MODID, "textures/magical_beast/magical_predator_green.png"),
+            new ResourceLocation(DragonSurvivalMod.MODID, "textures/magical_beast/magical_predator_jungle.png"),
+            new ResourceLocation(DragonSurvivalMod.MODID, "textures/magical_beast/magical_predator_jungle_flowers.png"),
+            new ResourceLocation(DragonSurvivalMod.MODID, "textures/magical_beast/magical_predator_light.png"),
+            new ResourceLocation(DragonSurvivalMod.MODID, "textures/magical_beast/magical_predator_sand.png"),
+            new ResourceLocation(DragonSurvivalMod.MODID, "textures/magical_beast/magical_predator_zombie.png")
     ));
 
     public MagicalPredatorRenderer(EntityRendererManager p_i50961_1_) {

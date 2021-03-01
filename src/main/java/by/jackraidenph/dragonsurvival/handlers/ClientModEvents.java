@@ -54,13 +54,13 @@ public class ClientModEvents {
 
     @SubscribeEvent
     public static void onTextureStitchEvent(TextureStitchEvent.Pre event) {
-        event.addSprite(new ResourceLocation(DragonSurvivalMod.MOD_ID, "te/star/cage"));
-        event.addSprite(new ResourceLocation(DragonSurvivalMod.MOD_ID, "te/star/wind"));
-        event.addSprite(new ResourceLocation(DragonSurvivalMod.MOD_ID, "te/star/open_eye"));
-        event.addSprite(new ResourceLocation(DragonSurvivalMod.MOD_ID, "te/star/wind_vertical"));
+        event.addSprite(new ResourceLocation(DragonSurvivalMod.MODID, "te/star/cage"));
+        event.addSprite(new ResourceLocation(DragonSurvivalMod.MODID, "te/star/wind"));
+        event.addSprite(new ResourceLocation(DragonSurvivalMod.MODID, "te/star/open_eye"));
+        event.addSprite(new ResourceLocation(DragonSurvivalMod.MODID, "te/star/wind_vertical"));
 
         for (String abilityTypeID : DragonSurvivalMod.ABILITIES_MAP.keySet())
-            event.addSprite(new ResourceLocation(DragonSurvivalMod.MOD_ID, "ability/" + abilityTypeID));
+            event.addSprite(new ResourceLocation(DragonSurvivalMod.MODID, "ability/" + abilityTypeID));
 
         DragonSurvivalMod.LOGGER.info("Successfully added sprites!");
     }
@@ -68,7 +68,7 @@ public class ClientModEvents {
     @SubscribeEvent
     public static void setupClient(final FMLClientSetupEvent event) {
         RenderTypeLookup.setRenderLayer(BlockInit.dragonAltar, RenderType.getCutout());
-        RenderingRegistry.registerEntityRenderingHandler(EntityTypesInit.magicalPredator, MagicalPredatorRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityTypesInit.MAGICAL_PREDATOR, MagicalPredatorRenderer::new);
         ClientRegistry.bindTileEntityRenderer(TileEntityTypesInit.PREDATOR_STAR_TILE_ENTITY_TYPE, PredatorStarTESR::new);
         ShaderHelper.initShaders();
 
@@ -104,7 +104,7 @@ public class ClientModEvents {
         InputStream inputStream = url.openConnection().getInputStream();
         NativeImage customTexture = NativeImage.read(inputStream);
         ResourceLocation resourceLocation;
-        Minecraft.getInstance().getTextureManager().loadTexture(resourceLocation = new ResourceLocation(DragonSurvivalMod.MOD_ID, dragonStage.name), new DynamicTexture(customTexture));
+        Minecraft.getInstance().getTextureManager().loadTexture(resourceLocation = new ResourceLocation(DragonSurvivalMod.MODID, dragonStage.name), new DynamicTexture(customTexture));
         return resourceLocation;
     }
 
@@ -130,7 +130,7 @@ public class ClientModEvents {
         InputStream inputStream = url.openConnection().getInputStream();
         NativeImage customTexture = NativeImage.read(inputStream);
         ResourceLocation resourceLocation;
-        Minecraft.getInstance().getTextureManager().loadTexture(resourceLocation = new ResourceLocation(DragonSurvivalMod.MOD_ID, dragonStage.name), new DynamicTexture(customTexture));
+        Minecraft.getInstance().getTextureManager().loadTexture(resourceLocation = new ResourceLocation(DragonSurvivalMod.MODID, dragonStage.name), new DynamicTexture(customTexture));
         return resourceLocation;
     }
 
@@ -156,7 +156,7 @@ public class ClientModEvents {
                 customTexture = NativeImage.read(new FileInputStream(fileNameB));
             }
             if (customTexture != null) {
-                minecraft.getTextureManager().loadTexture(skinLocation = new ResourceLocation(DragonSurvivalMod.MOD_ID, dragonStage), new DynamicTexture(customTexture));
+                minecraft.getTextureManager().loadTexture(skinLocation = new ResourceLocation(DragonSurvivalMod.MODID, dragonStage), new DynamicTexture(customTexture));
                 return skinLocation;
             }
         } catch (IOException e) {

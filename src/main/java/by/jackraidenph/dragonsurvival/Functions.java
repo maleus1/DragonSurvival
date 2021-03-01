@@ -1,6 +1,7 @@
 package by.jackraidenph.dragonsurvival;
 
 import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
 

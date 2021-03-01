@@ -21,7 +21,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.ObjectHolder;
 
-@ObjectHolder(DragonSurvivalMod.MOD_ID)
+@ObjectHolder(DragonSurvivalMod.MODID)
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class BlockInit {
     public static ItemGroup blocks = new ItemGroup("dragon.survival.blocks") {
@@ -57,20 +57,20 @@ public class BlockInit {
                 .tickRandomly()
                 .noDrops()
                 .sound(SoundType.NETHER_WART));
-        forgeRegistry.register(predatorStarBlock.setRegistryName(DragonSurvivalMod.MOD_ID, "predator_star"));
+        forgeRegistry.register(predatorStarBlock.setRegistryName(DragonSurvivalMod.MODID, "predator_star"));
 
         dragonDoor = new DragonDoor(Block.Properties
                 .create(Material.WOOD, MaterialColor.BROWN)
                 .hardnessAndResistance(3.0F)
                 .sound(SoundType.WOOD)
                 .notSolid());
-        forgeRegistry.register(dragonDoor.setRegistryName(DragonSurvivalMod.MOD_ID, "dragon_gate"));
+        forgeRegistry.register(dragonDoor.setRegistryName(DragonSurvivalMod.MODID, "dragon_gate"));
 
         nestBlock = new NestBlock(Block.Properties
                 .create(Material.ROCK)
                 .hardnessAndResistance(3, 100)
                 .notSolid());
-        forgeRegistry.register(nestBlock.setRegistryName(DragonSurvivalMod.MOD_ID, "dragon_nest"));
+        forgeRegistry.register(nestBlock.setRegistryName(DragonSurvivalMod.MODID, "dragon_nest"));
     }
 
     @SubscribeEvent

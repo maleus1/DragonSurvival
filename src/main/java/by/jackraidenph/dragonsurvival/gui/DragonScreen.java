@@ -22,7 +22,7 @@ import net.minecraft.util.text.ITextComponent;
 
 public class DragonScreen extends DisplayEffectsScreen<DragonContainer> implements IRecipeShownListener {
     private final RecipeBookGui recipeBookGui = new RecipeBookGui();
-    static final ResourceLocation BACKGROUND = new ResourceLocation(DragonSurvivalMod.MOD_ID, "textures/ui/dragon_inventory.png");
+    static final ResourceLocation BACKGROUND = new ResourceLocation(DragonSurvivalMod.MODID, "textures/ui/dragon_inventory.png");
     private static final ResourceLocation RECIPE_BUTTON_TEXTURE = new ResourceLocation("textures/gui/recipe_button.png");
     private boolean widthTooNarrow;
     /**

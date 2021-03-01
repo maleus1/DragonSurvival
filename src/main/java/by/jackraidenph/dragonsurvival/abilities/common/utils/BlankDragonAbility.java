@@ -26,7 +26,7 @@ public class BlankDragonAbility implements IDragonAbility {
 
     @Override
     public ResourceLocation getIcon() {
-        return new ResourceLocation(DragonSurvivalMod.MOD_ID, "textures/ability/" + this.getId() + ".png");
+        return new ResourceLocation(DragonSurvivalMod.MODID, "textures/ability/" + this.getId() + ".png");
     }
 
     @Override

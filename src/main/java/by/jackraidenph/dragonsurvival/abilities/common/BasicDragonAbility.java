@@ -15,7 +15,7 @@ public abstract class BasicDragonAbility implements IDragonAbility {
     public BasicDragonAbility(AbilityType<? extends IDragonAbility> type, PlayerEntity playerDragon) {
         this.playerDragon = playerDragon;
         this.type = type;
-        this.iconTexture = new ResourceLocation(DragonSurvivalMod.MOD_ID, "textures/ability/" + this.getId() + ".png");
+        this.iconTexture = new ResourceLocation(DragonSurvivalMod.MODID, "textures/ability/" + this.getId() + ".png");
     }
 
     @Override

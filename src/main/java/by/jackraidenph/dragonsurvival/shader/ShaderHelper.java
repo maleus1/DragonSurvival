@@ -116,7 +116,7 @@ public final class ShaderHelper {
     }
 
     private static ShaderLoader createShader(IResourceManager manager, String filename, ShaderLoader.ShaderType shaderType) throws IOException {
-        ResourceLocation loc = new ResourceLocation(DragonSurvivalMod.MOD_ID, filename);
+        ResourceLocation loc = new ResourceLocation(DragonSurvivalMod.MODID, filename);
 
         try (InputStream is = new BufferedInputStream(manager.getResource(loc).getInputStream())) {
             return ShaderLoader.func_216534_a(shaderType, loc.toString(), is);

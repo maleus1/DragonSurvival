@@ -7,6 +7,7 @@ import by.jackraidenph.dragonsurvival.capability.DragonStateHandler;
 import by.jackraidenph.dragonsurvival.capability.DragonStateProvider;
 import by.jackraidenph.dragonsurvival.containers.DragonInventoryContainer;
 import by.jackraidenph.dragonsurvival.entity.MagicalPredatorEntity;
+import by.jackraidenph.dragonsurvival.init.ItemsInit;
 import by.jackraidenph.dragonsurvival.network.SynchronizeDragonCap;
 import by.jackraidenph.dragonsurvival.init.EntityTypesInit;
 import by.jackraidenph.dragonsurvival.util.DragonType;
@@ -108,7 +109,7 @@ public class EventHandler {
     @SubscribeEvent
     public static void onCapabilityAttachment(AttachCapabilitiesEvent<Entity> event) {
         if (event.getObject() instanceof PlayerEntity) {
-            event.addCapability(new ResourceLocation(DragonSurvivalMod.MOD_ID, "playerstatehandler"), new DragonStateProvider());
+            event.addCapability(new ResourceLocation(DragonSurvivalMod.MODID, "playerstatehandler"), new DragonStateProvider());
             DragonSurvivalMod.LOGGER.info("Successfully attached capability to the " + event.getObject().getClass().getSimpleName());
         }
     }
@@ -136,7 +137,7 @@ public class EventHandler {
             return;
 
         if (livingEntity instanceof AnimalEntity && livingEntity.world.getRandom().nextInt(30) == 0) {
-            MagicalPredatorEntity beast = EntityTypesInit.MAGICAL_BEAST.create(livingEntity.world);
+            MagicalPredatorEntity beast = EntityTypesInit.MAGICAL_PREDATOR.create(livingEntity.world);
             livingEntity.world.addEntity(beast);
             beast.setPositionAndUpdate(livingEntity.getPosX(), livingEntity.getPosY(), livingEntity.getPosZ());
         }

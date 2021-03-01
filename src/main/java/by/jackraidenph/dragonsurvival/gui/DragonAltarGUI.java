@@ -22,7 +22,7 @@ import net.minecraftforge.fml.client.gui.widget.ExtendedButton;
 import java.util.HashMap;
 
 public class DragonAltarGUI extends Screen {
-    private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(DragonSurvivalMod.MOD_ID, "textures/gui/dragon_altar.png");
+    private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(DragonSurvivalMod.MODID, "textures/gui/dragon_altar.png");
     private final int xSize = 852 / 2;
     private final int ySize = 500 / 2;
     private int guiLeft;

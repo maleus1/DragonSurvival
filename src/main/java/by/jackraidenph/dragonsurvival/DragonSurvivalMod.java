@@ -17,7 +17,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
-import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -28,10 +27,8 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -40,21 +37,20 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.HashMap;
 
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 
-@Mod(DragonSurvivalMod.MOD_ID)
+@Mod(DragonSurvivalMod.MODID)
 public class DragonSurvivalMod {
-    public static final String MOD_ID = "dragonsurvival";
+    public static final String MODID = "dragonsurvival";
     public static final Logger LOGGER = LogManager.getLogger();
     public static final HashMap<String, AbilityType<? extends IDragonAbility>> ABILITIES_MAP = new HashMap<>();
     private static final String PROTOCOL_VERSION = "1";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(MOD_ID, "main"), () -> PROTOCOL_VERSION,
+            new ResourceLocation(MODID, "main"), () -> PROTOCOL_VERSION,
             PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals);
     private static int nextPacketId = 0;
     private static AbilityTickingHandler HANDLER;
@@ -116,7 +112,7 @@ public class DragonSurvivalMod {
             boolean isDragon = packetBuffer.readBoolean();
             float health = packetBuffer.readFloat();
 
-            return new SynchronizeDragonCap(id, hiding, type, level, isDragon, packetBuffer.readFloat(), packetBuffer.readBoolean());
+            return new SynchronizeDragonCap(id, hiding, type, level, isDragon, health, packetBuffer.readBoolean());
         }, (synchronizeDragonCap, contextSupplier) -> {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> new PacketProxy().handleCapabilitySync(synchronizeDragonCap, contextSupplier));
             if (contextSupplier.get().getDirection().getReceptionSide() == LogicalSide.SERVER) {
