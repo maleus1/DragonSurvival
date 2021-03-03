@@ -2,7 +2,6 @@ package by.jackraidenph.dragonsurvival.abilities.common;
 
 import by.jackraidenph.dragonsurvival.abilities.common.utils.AbilityType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.text.TranslationTextComponent;
 
 public abstract class ChargeableDragonAbility extends BasicDragonAbility {
 
@@ -39,6 +38,8 @@ public abstract class ChargeableDragonAbility extends BasicDragonAbility {
 
     @Override
     public void onKeyPressed() {
-        this.doAction(this.chargeTimer);
+        super.onKeyPressed();
+        if (this.getCooldown() == 0)
+            this.doAction(this.chargeTimer);
     }
 }

@@ -15,6 +15,8 @@ public abstract class ActivatedDragonAbility extends BasicDragonAbility {
 
     @Override
     public void onKeyPressed() {
+        super.onKeyPressed();
+        if (this.getCooldown() == 0)
         this.onActivation();
     }
 }

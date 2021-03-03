@@ -26,7 +26,7 @@ public class AbilityType<T extends IDragonAbility> {
     }
 
     private static <T extends IDragonAbility> AbilityType<T> register(AbilityType.Builder<T> builder) {
-        DragonSurvivalMod.ABILITIES_MAP.put(builder.id, builder.build());
+        DragonSurvivalMod.ABILITY_TYPES.put(builder.id, builder.build());
         return builder.build();
     }
 
@@ -41,7 +41,7 @@ public class AbilityType<T extends IDragonAbility> {
     public static NonNullList<AbilityType> toTypesList(NonNullList<IDragonAbility> abilityList) {
         NonNullList<AbilityType> abilities = NonNullList.create();
         for (int i = 0; i < abilityList.size(); i++) {
-            abilities.add(i, DragonSurvivalMod.ABILITIES_MAP.get(abilityList.get(i).getId()));
+            abilities.add(i, DragonSurvivalMod.ABILITY_TYPES.get(abilityList.get(i).getId()));
         }
         return abilities;
     }

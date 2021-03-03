@@ -4,6 +4,10 @@ import by.jackraidenph.dragonsurvival.DragonSurvivalMod;
 import by.jackraidenph.dragonsurvival.abilities.common.utils.AbilityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
+
+import java.text.NumberFormat;
 
 public abstract class BasicDragonAbility implements IDragonAbility {
 
@@ -11,11 +15,13 @@ public abstract class BasicDragonAbility implements IDragonAbility {
     private AbilityType type;
     private int cooldownTimer;
     private ResourceLocation iconTexture;
+    private NumberFormat nf = NumberFormat.getInstance();
 
     public BasicDragonAbility(AbilityType<? extends IDragonAbility> type, PlayerEntity playerDragon) {
         this.playerDragon = playerDragon;
         this.type = type;
         this.iconTexture = new ResourceLocation(DragonSurvivalMod.MODID, "textures/ability/" + this.getId() + ".png");
+        this.nf.setMaximumFractionDigits(1);
     }
 
     @Override
@@ -35,7 +41,12 @@ public abstract class BasicDragonAbility implements IDragonAbility {
 
     @Override
     public void onKeyPressed() {
-
+        if (this.getCooldown() != 0) {
+            if (this.getPlayerDragon().world.isRemote)
+                this.getPlayerDragon().sendStatusMessage(
+                        new TranslationTextComponent("ds.skill_cooldown_check_failure").appendText(" " + nf.format(this.getCooldown() / 20.0F) + "s").applyTextStyle(TextFormatting.RED),
+                        true);
+        }
     }
 
     public int getMaxCooldown() {
@@ -57,6 +68,7 @@ public abstract class BasicDragonAbility implements IDragonAbility {
 
     public void startCooldown() {
         this.cooldownTimer = this.getMaxCooldown();
+        DragonSurvivalMod.getTickHandler().addToCoolDownList(this);
     }
 
     @Override

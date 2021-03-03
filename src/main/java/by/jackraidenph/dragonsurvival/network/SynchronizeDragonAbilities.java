@@ -42,7 +42,7 @@ public class SynchronizeDragonAbilities implements IMessage<SynchronizeDragonAbi
         int size = buffer.readInt();
         int selectedSlot = buffer.readInt();
         for (int i = 0; i < size; i++)
-            abilities.add(i, DragonSurvivalMod.ABILITIES_MAP.get(buffer.readString()));
+            abilities.add(i, DragonSurvivalMod.ABILITY_TYPES.get(buffer.readString()));
         return new SynchronizeDragonAbilities(size, selectedSlot, abilities);
     }
 

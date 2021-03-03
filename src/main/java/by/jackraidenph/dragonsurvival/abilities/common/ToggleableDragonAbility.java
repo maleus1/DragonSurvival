@@ -27,6 +27,9 @@ public abstract class ToggleableDragonAbility extends BasicDragonAbility {
 
     @Override
     public void onKeyPressed() {
+        super.onKeyPressed();
+        if (this.getCooldown() != 0)
+            return;
 
         if (!isActive) {
             startAbility();

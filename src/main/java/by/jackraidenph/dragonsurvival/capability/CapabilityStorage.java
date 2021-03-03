@@ -71,11 +71,11 @@ public class CapabilityStorage implements Capability.IStorage<DragonStateHandler
                 instance.setLevel(DragonLevel.valueOf(level));
             instance.setSelectedAbilitySlot(tag.getInt("selectedAbilitySlot"));
 
-            instance.setAbilityInSlot(DragonSurvivalMod.ABILITIES_MAP.get(tag.getString("abilitySlot1")).create(null), 0);
-            instance.setAbilityInSlot(DragonSurvivalMod.ABILITIES_MAP.get(tag.getString("abilitySlot2")).create(null), 1);
-            instance.setAbilityInSlot(DragonSurvivalMod.ABILITIES_MAP.get(tag.getString("abilitySlot3")).create(null), 2);
-            instance.setAbilityInSlot(DragonSurvivalMod.ABILITIES_MAP.get(tag.getString("abilitySlot4")).create(null), 3);
-            instance.setAbilityInSlot(DragonSurvivalMod.ABILITIES_MAP.get(tag.getString("abilitySlot5")).create(null), 4);
+            instance.setAbilityInSlot(DragonSurvivalMod.ABILITY_TYPES.get(tag.getString("abilitySlot1")).create(null), 0);
+            instance.setAbilityInSlot(DragonSurvivalMod.ABILITY_TYPES.get(tag.getString("abilitySlot2")).create(null), 1);
+            instance.setAbilityInSlot(DragonSurvivalMod.ABILITY_TYPES.get(tag.getString("abilitySlot3")).create(null), 2);
+            instance.setAbilityInSlot(DragonSurvivalMod.ABILITY_TYPES.get(tag.getString("abilitySlot4")).create(null), 3);
+            instance.setAbilityInSlot(DragonSurvivalMod.ABILITY_TYPES.get(tag.getString("abilitySlot5")).create(null), 4);
             instance.setHealth(tag.getFloat("Health"));
             instance.setHasWings(tag.getBoolean("Has wings"));
         }

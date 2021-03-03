@@ -1,16 +1,19 @@
 package by.jackraidenph.dragonsurvival;
 
 import by.jackraidenph.dragonsurvival.abilities.common.IDragonAbility;
+import by.jackraidenph.dragonsurvival.abilities.common.utils.AbilityTree;
 import by.jackraidenph.dragonsurvival.abilities.common.utils.AbilityType;
 import by.jackraidenph.dragonsurvival.capability.Capabilities;
 import by.jackraidenph.dragonsurvival.capability.DragonStateHandler;
 import by.jackraidenph.dragonsurvival.capability.DragonStateProvider;
 import by.jackraidenph.dragonsurvival.handlers.AbilityTickingHandler;
+import by.jackraidenph.dragonsurvival.init.AbilityTreeInit;
 import by.jackraidenph.dragonsurvival.init.EntityTypesInit;
 import by.jackraidenph.dragonsurvival.network.*;
 import by.jackraidenph.dragonsurvival.util.ConfigurationHandler;
 import by.jackraidenph.dragonsurvival.util.DragonLevel;
 import by.jackraidenph.dragonsurvival.util.DragonType;
+import com.google.common.collect.ImmutableMap;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -47,7 +50,12 @@ import static net.minecraft.command.Commands.literal;
 public class DragonSurvivalMod {
     public static final String MODID = "dragonsurvival";
     public static final Logger LOGGER = LogManager.getLogger();
-    public static final HashMap<String, AbilityType<? extends IDragonAbility>> ABILITIES_MAP = new HashMap<>();
+    public static final HashMap<String, AbilityType<? extends IDragonAbility>> ABILITY_TYPES = new HashMap<>();
+    public static final ImmutableMap<DragonType, AbilityTree> ABILITY_TREE_MAP = ImmutableMap.of(
+            DragonType.CAVE, AbilityTreeInit.CAVE_DRAGON_TREE,
+            DragonType.SEA, AbilityTreeInit.SEA_DRAGON_TREE,
+            DragonType.FOREST, AbilityTreeInit.FOREST_DRAGON_TREE
+    );
     private static final String PROTOCOL_VERSION = "1";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(MODID, "main"), () -> PROTOCOL_VERSION,
@@ -65,6 +73,7 @@ public class DragonSurvivalMod {
 
         //IMPORTANT TO ENSURE INITIALIZATION ORDER
         AbilityType.init();
+        AbilityTreeInit.init();
     }
 
     public static AbilityTickingHandler getTickHandler() {

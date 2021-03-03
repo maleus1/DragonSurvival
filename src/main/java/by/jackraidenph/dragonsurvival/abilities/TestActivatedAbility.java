@@ -23,19 +23,11 @@ public class TestActivatedAbility extends ActivatedDragonAbility {
 
     @Override
     public void tick() {
-        if (this.getCooldown() > 0)
-            this.decreaseCooldownTimer();
-        else
-            DragonSurvivalMod.getTickHandler().removeFromTickList(this);
+
     }
 
     @Override
     public void onActivation() {
-        if (this.getCooldown() != 0) {
-            this.getPlayerDragon().sendStatusMessage(new TranslationTextComponent("ds.skill_cooldown_check_failure").appendText(" " + this.getCooldown() / 20.0F + "s"), true);
-            DragonSurvivalMod.getTickHandler().addToTickList(this);
-            return;
-        }
         this.startCooldown();
         World world = this.getPlayerDragon().world;
         double x = this.getPlayerDragon().getPosX();

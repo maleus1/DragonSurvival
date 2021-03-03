@@ -10,7 +10,6 @@ import by.jackraidenph.dragonsurvival.capability.DragonStateProvider;
 import by.jackraidenph.dragonsurvival.models.DragonModel;
 import by.jackraidenph.dragonsurvival.network.ActivateAbilityInSlot;
 import by.jackraidenph.dragonsurvival.network.IMessage;
-import by.jackraidenph.dragonsurvival.models.Wings;
 import by.jackraidenph.dragonsurvival.network.OpenDragonInventory;
 import by.jackraidenph.dragonsurvival.network.SynchronizeDragonAbilities;
 import by.jackraidenph.dragonsurvival.util.DragonLevel;
@@ -69,8 +68,8 @@ public class ClientEvents {
     static HashMultimap<String, ResourceLocation> skinCacheForName = HashMultimap.create(1, 3);
     static ResourceLocation HUDTextures = new ResourceLocation(DragonSurvivalMod.MODID, "textures/gui/dragon_hud.png");
     static ResourceLocation HUDAbilities = new ResourceLocation(DragonSurvivalMod.MODID, "textures/gui/abilities_hud.png");
-
-    public static Wings wings = new Wings();
+    private static byte timer = 0;
+    private static byte abilityHoldTimer = 0;
 
     static {
         firstPersonModel.Head.showModel = false;
@@ -159,9 +158,30 @@ public class ClientEvents {
 
         PlayerEntity playerEntity = Minecraft.getInstance().player;
 
-        byte modeAbility = Functions.getKeyMode(ClientModEvents.ACTIVATE_ABILITY);
+        abilityHoldTimer = (byte) (ClientModEvents.ACTIVATE_ABILITY.isKeyDown() ? abilityHoldTimer < 3 ? abilityHoldTimer + 1 : abilityHoldTimer : 0);
+        byte modeAbility;
+        if (ClientModEvents.ACTIVATE_ABILITY.isKeyDown() && abilityHoldTimer > 1)
+            modeAbility = GLFW.GLFW_REPEAT;
+        else if (ClientModEvents.ACTIVATE_ABILITY.isKeyDown() && abilityHoldTimer == 1)
+            modeAbility = GLFW.GLFW_PRESS;
+        else
+            modeAbility = GLFW.GLFW_RELEASE;
+
         byte modeTest = Functions.getKeyMode(ClientModEvents.TEST);
         int slot = DragonStateProvider.getCap(playerEntity).map(DragonStateHandler::getSelectedAbilitySlot).orElse(0);
+
+        if (modeTest == GLFW.GLFW_PRESS) {
+            DragonStateProvider.getCap(Minecraft.getInstance().player).ifPresent(cap -> {
+                cap.setAbilityInSlot(AbilityType.TEST_ACTIVATED_ABILITY_TYPE.create(Minecraft.getInstance().player), 0);
+                IMessage messageSync = new SynchronizeDragonAbilities(cap.getMaxActiveAbilitySlots(), cap.getSelectedAbilitySlot(), AbilityType.toTypesList(cap.getAbilitySlots()));
+                DragonSurvivalMod.CHANNEL.sendToServer(messageSync);
+            });
+        }
+
+        timer = (byte) ((modeAbility == GLFW.GLFW_RELEASE) ? timer < 3 ? timer + 1 : timer : 0);
+
+        if (timer > 1)
+            return;
 
         IMessage message = new ActivateAbilityInSlot(slot, modeAbility);
         DragonSurvivalMod.CHANNEL.sendToServer(message);
@@ -180,14 +200,6 @@ public class ClientEvents {
                 }
             }
         });
-
-        if (modeTest == GLFW.GLFW_PRESS) {
-            DragonStateProvider.getCap(Minecraft.getInstance().player).ifPresent(cap -> {
-                cap.setAbilityInSlot(AbilityType.TEST_ACTIVATED_ABILITY_TYPE.create(Minecraft.getInstance().player), 0);
-                IMessage messageSync = new SynchronizeDragonAbilities(cap.getMaxActiveAbilitySlots(), cap.getSelectedAbilitySlot(), AbilityType.toTypesList(cap.getAbilitySlots()));
-                DragonSurvivalMod.CHANNEL.sendToServer(messageSync);
-            });
-        }
     }
 
     @SubscribeEvent

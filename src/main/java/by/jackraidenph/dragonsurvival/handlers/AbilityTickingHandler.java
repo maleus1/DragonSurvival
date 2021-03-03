@@ -1,34 +1,46 @@
 package by.jackraidenph.dragonsurvival.handlers;
 
+import by.jackraidenph.dragonsurvival.abilities.common.BasicDragonAbility;
 import by.jackraidenph.dragonsurvival.abilities.common.IDragonAbility;
+import com.google.common.collect.Queues;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-import java.util.ArrayList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class AbilityTickingHandler {
 
-    private ArrayList<IDragonAbility> abilitiesToTick = new ArrayList<>();
-    private ArrayList<IDragonAbility> pendingToRemoveList = new ArrayList<>();
-    private ArrayList<IDragonAbility> pendingToAddList = new ArrayList<>();
+    private ConcurrentLinkedQueue<IDragonAbility> abilitiesToTick = Queues.newConcurrentLinkedQueue();
+    private ConcurrentLinkedQueue<BasicDragonAbility> abilitiesToCoolDown = Queues.newConcurrentLinkedQueue();
+
+    public void addToCoolDownList(BasicDragonAbility ability) {
+        if (!this.abilitiesToCoolDown.contains(ability))
+            this.abilitiesToCoolDown.add(ability);
+    }
+
+    public void removeFromCoolDownList(BasicDragonAbility ability) {
+        this.abilitiesToCoolDown.remove(ability);
+    }
 
     public void addToTickList(IDragonAbility ability) {
-        if (!this.pendingToAddList.contains(ability) && !this.abilitiesToTick.contains(ability))
-            this.pendingToAddList.add(ability);
+        if (!this.abilitiesToTick.contains(ability))
+            this.abilitiesToTick.add(ability);
     }
 
     public void removeFromTickList(IDragonAbility ability) {
-        this.pendingToRemoveList.remove(ability);
+        this.abilitiesToTick.remove(ability);
     }
 
     @SubscribeEvent
     public void tickAbilities(TickEvent.WorldTickEvent e) {
-        //NECESSARY TO EXCLUDE CHANCES OF ConcurrentModificationException
-        abilitiesToTick.addAll(pendingToAddList);
-        pendingToRemoveList.forEach(abilitiesToTick::remove);
-        pendingToRemoveList.clear();
-        pendingToAddList.clear();
-
         abilitiesToTick.forEach(IDragonAbility::tick);
+        abilitiesToCoolDown.forEach(this::decreaseCooldownTimer);
+    }
+
+    private void decreaseCooldownTimer(BasicDragonAbility ability) {
+        if (ability.getCooldown() != 0)
+            ability.decreaseCooldownTimer();
+        else
+            this.removeFromCoolDownList(ability);
     }
 }
