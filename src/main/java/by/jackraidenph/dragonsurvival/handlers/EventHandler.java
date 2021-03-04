@@ -7,16 +7,19 @@ import by.jackraidenph.dragonsurvival.capability.DragonStateHandler;
 import by.jackraidenph.dragonsurvival.capability.DragonStateProvider;
 import by.jackraidenph.dragonsurvival.containers.DragonInventoryContainer;
 import by.jackraidenph.dragonsurvival.entity.MagicalPredatorEntity;
+import by.jackraidenph.dragonsurvival.init.EntityTypesInit;
 import by.jackraidenph.dragonsurvival.init.ItemsInit;
 import by.jackraidenph.dragonsurvival.network.SynchronizeDragonCap;
-import by.jackraidenph.dragonsurvival.init.EntityTypesInit;
 import by.jackraidenph.dragonsurvival.util.DragonType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.AvoidEntityGoal;
+import net.minecraft.entity.ai.goal.SitGoal;
+import net.minecraft.entity.item.FireworkRocketEntity;
 import net.minecraft.entity.merchant.villager.VillagerEntity;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.passive.horse.AbstractHorseEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.PlayerContainer;
@@ -25,6 +28,7 @@ import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.EntityPredicates;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -35,11 +39,14 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Optional;
 
 @Mod.EventBusSubscriber
 public class EventHandler {
@@ -98,12 +105,58 @@ public class EventHandler {
     @SubscribeEvent
     public static void onJoin(EntityJoinWorldEvent joinWorldEvent) {
         Entity entity = joinWorldEvent.getEntity();
-        if (!(entity instanceof MonsterEntity || entity instanceof VillagerEntity) & entity instanceof CreatureEntity) {
+        if (!((entity instanceof MonsterEntity) || (entity instanceof VillagerEntity) || (entity.hasCustomName() && entity.getCustomName().getString().equals("Red"))) & entity instanceof CreatureEntity) {
             ((MobEntity) entity).goalSelector.addGoal(2, new AvoidEntityGoal(
                     (CreatureEntity) entity, PlayerEntity.class,
-                    livingEntity -> DragonStateProvider.getCap((PlayerEntity) livingEntity).orElse(null).isDragon(),
+                    livingEntity -> DragonStateProvider.isDragon((PlayerEntity) livingEntity),
                     20.0F, 1.3F, 1.5F, EntityPredicates.CAN_AI_TARGET));
         }
+    }
+
+    @SubscribeEvent
+    public static void onFarewell(PlayerWakeUpEvent event) {
+        if (!DragonSurvivalMod.isFarewellDate())
+            return;
+
+        if (event.getEntityLiving().world.getEntitiesWithinAABB(CatEntity.class,
+                event.getEntityLiving().getBoundingBox().grow(16.0D),
+                entity -> Optional.ofNullable(entity.getCustomName()).orElse(new StringTextComponent("")).getString().equals("Red"))
+                .size() < 1) {
+            CatEntity Red = EntityType.CAT.create(event.getEntity().world,
+                    null,
+                    new StringTextComponent("Red"),
+                    event.getPlayer(),
+                    event.getEntityLiving().getPosition(),
+                    SpawnReason.EVENT,
+                    true,
+                    true);
+            event.getEntityLiving().world.addEntity(Red);
+            Red.setCatType(2);
+            Red.setAbsorptionAmount(32002);
+            Red.setPosition(event.getEntity().getPosX(), event.getEntity().getPosY(), event.getEntity().getPosZ());
+            Red.setTamedBy(event.getPlayer());
+            Red.goalSelector.addGoal(0, new SitGoal(Red));
+            Red.setSitting(true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onFarewellsEnd(TickEvent.PlayerTickEvent event) {
+        if (DragonSurvivalMod.isFarewellDate())
+            return;
+
+        CatEntity Red = null;
+        List list = event.player.world.getEntitiesWithinAABB(CatEntity.class, event.player.getBoundingBox().grow(16.0F), entity -> Optional.ofNullable(entity.getCustomName()).orElse(new StringTextComponent("")).getString().equals("Red"));
+        if (list.size() > 0)
+            Red = (CatEntity) list.get(0);
+
+        if (Red == null)
+            return;
+
+        event.player.world.addEntity(new FireworkRocketEntity(event.player.world, Red.getPosX(), Red.getPosY(), Red.getPosZ(), new ItemStack(Items.FEATHER)));
+        Red.remove();
+        if (event.player.world.isRemote)
+            event.player.sendStatusMessage(new StringTextComponent("Bye, human, see ya on the other side!"), true);
     }
 
     @SubscribeEvent
