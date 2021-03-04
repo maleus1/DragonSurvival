@@ -1,7 +1,6 @@
 package by.jackraidenph.dragonsurvival.handlers;
 
 import by.jackraidenph.dragonsurvival.DragonSurvivalMod;
-import by.jackraidenph.dragonsurvival.Functions;
 import by.jackraidenph.dragonsurvival.abilities.common.ChargeableDragonAbility;
 import by.jackraidenph.dragonsurvival.abilities.common.IDragonAbility;
 import by.jackraidenph.dragonsurvival.abilities.common.utils.AbilityType;
@@ -167,10 +166,9 @@ public class ClientEvents {
         else
             modeAbility = GLFW.GLFW_RELEASE;
 
-        byte modeTest = Functions.getKeyMode(ClientModEvents.TEST);
         int slot = DragonStateProvider.getCap(playerEntity).map(DragonStateHandler::getSelectedAbilitySlot).orElse(0);
 
-        if (modeTest == GLFW.GLFW_PRESS) {
+        if (ClientModEvents.TEST.isPressed()) {
             DragonStateProvider.getCap(Minecraft.getInstance().player).ifPresent(cap -> {
                 cap.setAbilityInSlot(AbilityType.TEST_ACTIVATED_ABILITY_TYPE.create(Minecraft.getInstance().player), 0);
                 IMessage messageSync = new SynchronizeDragonAbilities(cap.getMaxActiveAbilitySlots(), cap.getSelectedAbilitySlot(), AbilityType.toTypesList(cap.getAbilitySlots()));
