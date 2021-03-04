@@ -42,10 +42,12 @@ import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Optional;
@@ -60,6 +62,7 @@ public class ClientEvents {
     public static DragonModel firstPersonModel = new DragonModel(true);
     public static DragonModel thirdPersonArmor = new DragonModel(false);
     public static DragonModel firstPersonArmor = new DragonModel(true);
+    public static Wings wings = new Wings();
     static boolean showingInventory;
     static HashMap<UUID, Boolean> warnings = new HashMap<>();
     static HashMap<String, Boolean> warningsForName = new HashMap<>();
@@ -143,6 +146,20 @@ public class ClientEvents {
         if (minecraft.currentScreen == null && DragonStateProvider.isDragon(minecraft.player) && !minecraft.player.isCreative() && gameSettings.keyBindInventory.isActiveAndMatches(input) && !showingInventory) {
             DragonSurvivalMod.CHANNEL.sendToServer(new OpenDragonInventory());
             showingInventory = true;
+        }
+    }
+
+
+    @SubscribeEvent
+    public static void onFarewell(GuiScreenEvent event) throws IllegalAccessException {
+        if (!DragonSurvivalMod.isFarewellDate())
+            return;
+
+        if (event.getGui() instanceof MainMenuScreen) {
+            MainMenuScreen screen = (MainMenuScreen) event.getGui();
+            Field splash = ObfuscationReflectionHelper.findField(MainMenuScreen.class, "splashText");
+            splash.setAccessible(true);
+            splash.set(screen, "Farewell, Red, The Wonderful Cat! (April 2002 - March 3, 2021)");
         }
     }
 

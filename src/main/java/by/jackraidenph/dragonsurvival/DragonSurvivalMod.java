@@ -41,6 +41,8 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.HashMap;
 
 import static net.minecraft.command.Commands.argument;
@@ -74,6 +76,10 @@ public class DragonSurvivalMod {
         //IMPORTANT TO ENSURE INITIALIZATION ORDER
         AbilityType.init();
         AbilityTreeInit.init();
+    }
+
+    public static boolean isFarewellDate(){
+        return (LocalDate.now().getDayOfMonth() == 3) && (LocalDate.now().getMonth() == Month.MARCH);
     }
 
     public static AbilityTickingHandler getTickHandler() {
