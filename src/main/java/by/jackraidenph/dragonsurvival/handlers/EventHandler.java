@@ -14,7 +14,6 @@ import by.jackraidenph.dragonsurvival.util.DragonType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.AvoidEntityGoal;
-import net.minecraft.entity.ai.goal.SitGoal;
 import net.minecraft.entity.item.FireworkRocketEntity;
 import net.minecraft.entity.merchant.villager.VillagerEntity;
 import net.minecraft.entity.monster.MonsterEntity;
@@ -33,10 +32,7 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.EntityMountEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
@@ -131,12 +127,13 @@ public class EventHandler {
                     true,
                     true);
             event.getEntityLiving().world.addEntity(Red);
-            Red.setCatType(2);
-            Red.setAbsorptionAmount(32002);
-            Red.setPosition(event.getEntity().getPosX(), event.getEntity().getPosY(), event.getEntity().getPosZ());
-            Red.setTamedBy(event.getPlayer());
-            Red.goalSelector.addGoal(0, new SitGoal(Red));
-            Red.setSitting(true);
+            if (Red != null) {
+                Red.setCatType(2);
+                Red.setPosition(event.getEntity().getPosX(), event.getEntity().getPosY(), event.getEntity().getPosZ());
+                Red.setTamedBy(event.getPlayer());
+                Red.getAISit().setSitting(true);
+                Red.setSitting(true);
+            }
         }
     }
 
@@ -356,6 +353,14 @@ public class EventHandler {
             if (wingsEnabled)
                 fallEvent.setCanceled(true);
         });
+    }
+
+    @SubscribeEvent
+    public static void RedNoDamageEvent(LivingHurtEvent event) {
+        LivingEntity living = event.getEntityLiving();
+        if ((living instanceof CatEntity) && living.hasCustomName() && living.getCustomName().getString().equals("Red")) {
+            event.setCanceled(true);
+        }
     }
 
 }

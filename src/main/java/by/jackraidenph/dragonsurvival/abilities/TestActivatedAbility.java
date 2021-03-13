@@ -1,13 +1,11 @@
 package by.jackraidenph.dragonsurvival.abilities;
 
-import by.jackraidenph.dragonsurvival.DragonSurvivalMod;
 import by.jackraidenph.dragonsurvival.abilities.common.ActivatedDragonAbility;
 import by.jackraidenph.dragonsurvival.abilities.common.utils.AbilityType;
 import net.minecraft.entity.item.FireworkRocketEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
 public class TestActivatedAbility extends ActivatedDragonAbility {
@@ -27,8 +25,14 @@ public class TestActivatedAbility extends ActivatedDragonAbility {
     }
 
     @Override
+    public int getManaCost() {
+        return 25;
+    }
+
+    @Override
     public void onActivation() {
         this.startCooldown();
+        this.consumeMana();
         World world = this.getPlayerDragon().world;
         double x = this.getPlayerDragon().getPosX();
         double y = this.getPlayerDragon().getPosY() + 0.5F;

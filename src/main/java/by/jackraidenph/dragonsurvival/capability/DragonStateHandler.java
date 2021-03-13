@@ -7,17 +7,36 @@ import by.jackraidenph.dragonsurvival.util.DragonType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 
-
+/**
+ * Synchronize on login
+ * {@link by.jackraidenph.dragonsurvival.handlers.SynchronizationController#onLoggedIn(PlayerEvent.PlayerLoggedInEvent)}
+ * Synchronize on respawn
+ * {@link by.jackraidenph.dragonsurvival.handlers.SynchronizationController#onPlayerRespawn(PlayerEvent.PlayerRespawnEvent)}
+ * Synchronize movement on tick
+ * {@link by.jackraidenph.dragonsurvival.handlers.SynchronizationController#onTick(TickEvent.PlayerTickEvent)}
+ * Synchronize on tracking
+ * {@link by.jackraidenph.dragonsurvival.handlers.SynchronizationController#onTrackingStart(PlayerEvent.StartTracking)}
+ * Synchronize movement data
+ * {@link by.jackraidenph.dragonsurvival.network.SynchronizeDragonCap}
+ * Synchronize abilities data
+ * {@link by.jackraidenph.dragonsurvival.network.SynchronizeDragonAbilities}
+ * Store capability data in NBT
+ * {@link by.jackraidenph.dragonsurvival.capability.CapabilityStorage}
+ */
 public class DragonStateHandler {
     private boolean isDragon;
     private boolean isHiding;
     private DragonType type = DragonType.NONE;
     private DragonLevel level = DragonLevel.BABY;
     private NonNullList<IDragonAbility> abilitySlots = NonNullList.withSize(5, new BlankDragonAbility());
-    private int maxActiveAbilitySlots = 5;
     private int selectedAbilitySlot = 0;
+    private int maxMana = 100;
+    private int currentMana = 0;
     /**
      * Current health, must be equal to the player's health
      */
@@ -27,6 +46,30 @@ public class DragonStateHandler {
 
     public boolean hasWings() {
         return hasWings;
+    }
+
+    public int getMaxMana() {
+        return maxMana;
+    }
+
+    public void setMaxMana(int maxMana) {
+        this.maxMana = maxMana;
+    }
+
+    public int getCurrentMana() {
+        return currentMana;
+    }
+
+    public void replenishMana(int mana){
+        this.setCurrentMana(this.getCurrentMana() + mana);
+    }
+
+    public void consumeMana(int mana){
+        this.setCurrentMana(this.getCurrentMana() - mana);
+    }
+
+    public void setCurrentMana(int currentMana) {
+        this.currentMana = MathHelper.clamp(currentMana, 0, this.getMaxMana());
     }
 
     public void setHasWings(boolean hasWings) {
@@ -57,10 +100,6 @@ public class DragonStateHandler {
         this.level = level;
     }
 
-    public int getMaxActiveAbilitySlots() {
-        return maxActiveAbilitySlots;
-    }
-
     public void populateAbilities(PlayerEntity playerEntity) {
         for (IDragonAbility ability : this.abilitySlots)
             ability.setPlayerDragon(playerEntity);
@@ -71,8 +110,8 @@ public class DragonStateHandler {
     }
 
     public IDragonAbility getAbilityFromSlot(int slot) {
-        if (slot > this.maxActiveAbilitySlots)
-            throw new IllegalArgumentException("Failed to set ability in the slot. The slot number is higher than the max slot count.");
+        if ((slot > 5) || (slot < 0))
+            throw new IllegalArgumentException("Failed to set ability in the slot. The slot number is inappropriate.");
 
         return this.abilitySlots.get(slot);
     }

@@ -39,7 +39,7 @@ public abstract class ChargeableDragonAbility extends BasicDragonAbility {
     @Override
     public void onKeyPressed() {
         super.onKeyPressed();
-        if (this.getCooldown() == 0)
+        if (this.getCooldown() == 0 && this.canConsumeMana())
             this.doAction(this.chargeTimer);
     }
 }

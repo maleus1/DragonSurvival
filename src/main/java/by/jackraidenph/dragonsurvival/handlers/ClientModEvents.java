@@ -50,7 +50,7 @@ public class ClientModEvents {
 
     public static final String SKINS = "https://raw.githubusercontent.com/DragonSurvivalTeam/DragonSurvival/master/src/test/resources/";
     public static final KeyBinding ACTIVATE_ABILITY = new KeyBinding("Activates chosen ability", GLFW.GLFW_KEY_F, "Dragon Survival");
-    public static final KeyBinding TEST = new KeyBinding("TEST", GLFW.GLFW_KEY_G, "Dragon Survival");
+    public static final KeyBinding TEST = new KeyBinding("TEST", GLFW.GLFW_KEY_C, "Dragon Survival");
 
     @SubscribeEvent
     public static void onTextureStitchEvent(TextureStitchEvent.Pre event) {

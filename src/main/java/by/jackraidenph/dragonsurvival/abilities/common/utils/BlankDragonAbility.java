@@ -30,6 +30,11 @@ public class BlankDragonAbility implements IDragonAbility {
     }
 
     @Override
+    public int getManaCost() {
+        return 0;
+    }
+
+    @Override
     public void onKeyPressed() {
 
     }

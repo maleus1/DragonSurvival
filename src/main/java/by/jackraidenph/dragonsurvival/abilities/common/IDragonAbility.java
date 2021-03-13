@@ -10,6 +10,8 @@ public interface IDragonAbility {
 
     ResourceLocation getIcon();
 
+    int getManaCost();
+
     void onKeyPressed();
 
     void tick();

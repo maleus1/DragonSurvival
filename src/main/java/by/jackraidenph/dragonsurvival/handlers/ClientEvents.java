@@ -7,6 +7,7 @@ import by.jackraidenph.dragonsurvival.abilities.common.utils.AbilityType;
 import by.jackraidenph.dragonsurvival.capability.DragonStateHandler;
 import by.jackraidenph.dragonsurvival.capability.DragonStateProvider;
 import by.jackraidenph.dragonsurvival.models.DragonModel;
+import by.jackraidenph.dragonsurvival.models.Wings;
 import by.jackraidenph.dragonsurvival.network.ActivateAbilityInSlot;
 import by.jackraidenph.dragonsurvival.network.IMessage;
 import by.jackraidenph.dragonsurvival.network.OpenDragonInventory;
@@ -70,7 +71,6 @@ public class ClientEvents {
     static HashMultimap<UUID, ResourceLocation> skinCache = HashMultimap.create(1, 3);
     static HashMultimap<String, ResourceLocation> skinCacheForName = HashMultimap.create(1, 3);
     static ResourceLocation HUDTextures = new ResourceLocation(DragonSurvivalMod.MODID, "textures/gui/dragon_hud.png");
-    static ResourceLocation HUDAbilities = new ResourceLocation(DragonSurvivalMod.MODID, "textures/gui/abilities_hud.png");
     private static byte timer = 0;
     private static byte abilityHoldTimer = 0;
 
@@ -188,8 +188,9 @@ public class ClientEvents {
 
         if (ClientModEvents.TEST.isPressed()) {
             DragonStateProvider.getCap(Minecraft.getInstance().player).ifPresent(cap -> {
-                cap.setAbilityInSlot(AbilityType.TEST_ACTIVATED_ABILITY_TYPE.create(Minecraft.getInstance().player), 0);
-                IMessage messageSync = new SynchronizeDragonAbilities(cap.getMaxActiveAbilitySlots(), cap.getSelectedAbilitySlot(), AbilityType.toTypesList(cap.getAbilitySlots()));
+                //cap.setAbilityInSlot(AbilityType.TEST_ACTIVATED_ABILITY_TYPE.create(Minecraft.getInstance().player), 0);
+                DragonStateProvider.replenishMana(Minecraft.getInstance().player, 10);
+                IMessage messageSync = new SynchronizeDragonAbilities(cap.getSelectedAbilitySlot(), cap.getMaxMana(), cap.getCurrentMana(), AbilityType.toTypesList(cap.getAbilitySlots()));
                 DragonSurvivalMod.CHANNEL.sendToServer(messageSync);
             });
         }
@@ -219,7 +220,7 @@ public class ClientEvents {
     }
 
     @SubscribeEvent
-    public static void renderAbilitySlots(RenderGameOverlayEvent.Post event) {
+    public static void renderAbilityHud(RenderGameOverlayEvent.Post event) {
 
         PlayerEntity playerEntity = Minecraft.getInstance().player;
 
@@ -228,7 +229,6 @@ public class ClientEvents {
 
         DragonStateProvider.getCap(playerEntity).ifPresent(cap -> {
             if (event.getType() == RenderGameOverlayEvent.ElementType.HOTBAR) {
-
                 GL11.glPushMatrix();
                 GL11.glEnable(GL11.GL_BLEND);
                 GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -238,12 +238,12 @@ public class ClientEvents {
 
                 GL11.glTranslated(0.0d, 0.125d, 0.0d);
 
-                for (int i = 0; i < cap.getMaxActiveAbilitySlots(); i++) {
+                for (int i = 0; i < 5; i++) {
                     textureManager.bindTexture(cap.getAbilityFromSlot(i).getIcon());
                     Screen.blit(window.getScaledWidth() - 20 * (5 - i) + 1, window.getScaledHeight() - 19, 1, 0, 0, 16, 16, 16, 16);
                 }
 
-                textureManager.bindTexture(HUDAbilities);
+                textureManager.bindTexture(new ResourceLocation("textures/gui/widgets.png"));
                 Screen.blit(window.getScaledWidth() - 102, window.getScaledHeight() - 22, 0, 0, 0, 102, 21, 256, 256);
                 Screen.blit(window.getScaledWidth() - 21 * (5 - cap.getSelectedAbilitySlot()) + 2, window.getScaledHeight() - 23, 2, 0, 22, 24, 24, 256, 256);
 

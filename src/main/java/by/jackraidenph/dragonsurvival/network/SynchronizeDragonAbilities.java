@@ -16,21 +16,25 @@ public class SynchronizeDragonAbilities implements IMessage<SynchronizeDragonAbi
     private NonNullList<AbilityType> abilityTypes;
     private int size;
     private int selectedSlot;
+    private int maxMana;
+    private int currentMana;
 
     public SynchronizeDragonAbilities() {
 
     }
 
-    public SynchronizeDragonAbilities(int size, int selectedSlot, NonNullList<AbilityType> abilityTypes) {
-        this.size = size;
+    public SynchronizeDragonAbilities(int selectedSlot, int maxMana, int currentMana, NonNullList<AbilityType>abilityTypes) {
+        this.maxMana = maxMana;
+        this.currentMana = currentMana;
         this.abilityTypes = abilityTypes;
         this.selectedSlot = selectedSlot;
     }
 
     @Override
     public void encode(SynchronizeDragonAbilities message, PacketBuffer buffer) {
-        buffer.writeInt(message.size);
         buffer.writeInt(message.selectedSlot);
+        buffer.writeInt(message.maxMana);
+        buffer.writeInt(message.currentMana);
         for (AbilityType abilityType : message.abilityTypes) {
             buffer.writeString(abilityType.getId());
         }
@@ -39,18 +43,20 @@ public class SynchronizeDragonAbilities implements IMessage<SynchronizeDragonAbi
     @Override
     public SynchronizeDragonAbilities decode(PacketBuffer buffer) {
         NonNullList<AbilityType> abilities = NonNullList.create();
-        int size = buffer.readInt();
         int selectedSlot = buffer.readInt();
-        for (int i = 0; i < size; i++)
+        int maxMana = buffer.readInt();
+        int currentMana = buffer.readInt();
+        for (int i = 0; i < 5; i++)
             abilities.add(i, DragonSurvivalMod.ABILITY_TYPES.get(buffer.readString()));
-        return new SynchronizeDragonAbilities(size, selectedSlot, abilities);
+        return new SynchronizeDragonAbilities(selectedSlot, maxMana, currentMana, abilities);
     }
 
     @Override
     public void handle(SynchronizeDragonAbilities message, Supplier<NetworkEvent.Context> supplier) {
-
         if (supplier.get().getDirection().getReceptionSide().isClient() && (Minecraft.getInstance().player != null))
             DragonStateProvider.getCap(Minecraft.getInstance().player).ifPresent(cap -> {
+                cap.setMaxMana(message.maxMana);
+                cap.setCurrentMana(message.currentMana);
                 cap.setSelectedAbilitySlot(message.selectedSlot);
                 cap.setAbilitySlotList(AbilityType.toAbilityList(Minecraft.getInstance().player, message.abilityTypes));
             });
@@ -58,6 +64,8 @@ public class SynchronizeDragonAbilities implements IMessage<SynchronizeDragonAbi
         ServerPlayerEntity playerEntity = supplier.get().getSender();
         if (playerEntity != null)
             DragonStateProvider.getCap(playerEntity).ifPresent(cap -> {
+                cap.setMaxMana(message.maxMana);
+                cap.setCurrentMana(message.currentMana);
                 cap.setSelectedAbilitySlot(message.selectedSlot);
                 cap.setAbilitySlotList(AbilityType.toAbilityList(supplier.get().getSender(), message.abilityTypes));
             });

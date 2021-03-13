@@ -2,6 +2,7 @@ package by.jackraidenph.dragonsurvival.abilities.common;
 
 import by.jackraidenph.dragonsurvival.DragonSurvivalMod;
 import by.jackraidenph.dragonsurvival.abilities.common.utils.AbilityType;
+import by.jackraidenph.dragonsurvival.capability.DragonStateProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
@@ -40,13 +41,29 @@ public abstract class BasicDragonAbility implements IDragonAbility {
     }
 
     @Override
+    public int getManaCost() {
+        return 0;
+    }
+
+    @Override
     public void onKeyPressed() {
+        if (!this.canConsumeMana())
+            this.getPlayerDragon().sendStatusMessage(
+                    new TranslationTextComponent("ds.skill_mana_check_failure").applyTextStyle(TextFormatting.DARK_AQUA),
+                    true);
         if (this.getCooldown() != 0) {
-            if (this.getPlayerDragon().world.isRemote)
-                this.getPlayerDragon().sendStatusMessage(
-                        new TranslationTextComponent("ds.skill_cooldown_check_failure").appendText(" " + nf.format(this.getCooldown() / 20.0F) + "s").applyTextStyle(TextFormatting.RED),
-                        true);
+            this.getPlayerDragon().sendStatusMessage(
+                    new TranslationTextComponent("ds.skill_cooldown_check_failure").appendText(" " + nf.format(this.getCooldown() / 20.0F) + "s").applyTextStyle(TextFormatting.RED),
+                    true);
         }
+    }
+
+    public boolean canConsumeMana() {
+        return DragonStateProvider.getCurrentMana(this.getPlayerDragon()) >= this.getManaCost();
+    }
+
+    public void consumeMana() {
+        DragonStateProvider.consumeMana(this.getPlayerDragon(), this.getManaCost());
     }
 
     public int getMaxCooldown() {

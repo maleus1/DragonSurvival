@@ -41,6 +41,8 @@ public class CapabilityStorage implements Capability.IStorage<DragonStateHandler
             tag.putBoolean("isHiding", instance.isHiding());
             tag.putString("type", instance.getType().toString());
             tag.putString("level", instance.getLevel().toString());
+            tag.putInt("mana", instance.getCurrentMana());
+            tag.putInt("maxMana", instance.getMaxMana());
 
             tag.putInt("selectedAbilitySlot", instance.getSelectedAbilitySlot());
 
@@ -70,6 +72,8 @@ public class CapabilityStorage implements Capability.IStorage<DragonStateHandler
             else
                 instance.setLevel(DragonLevel.valueOf(level));
             instance.setSelectedAbilitySlot(tag.getInt("selectedAbilitySlot"));
+            instance.setMaxMana(tag.getInt("maxMana"));
+            instance.setCurrentMana(tag.getInt("mana"));
 
             instance.setAbilityInSlot(DragonSurvivalMod.ABILITY_TYPES.get(tag.getString("abilitySlot1")).create(null), 0);
             instance.setAbilityInSlot(DragonSurvivalMod.ABILITY_TYPES.get(tag.getString("abilitySlot2")).create(null), 1);
