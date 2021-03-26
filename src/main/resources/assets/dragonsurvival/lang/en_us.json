@@ -14,11 +14,22 @@
   "item.dragonsurvival.charred_meat": "Charred Meat",
 
   "_comment": "Block",
+  "item.dragonsurvival.elder_dragon_dust": "Elder Dragon Dust",
+  "block.dragonsurvival.dragon_gate": "Dragon Gate",
   "block.dragonsurvival.predator_star": "Predator Star",
   "block.dragonsurvival.dragon_altar": "Dragon Altar",
   "block.dragonsurvival.dragon_gate": "Dragon Gate",
 
   "_comment": "Tooltip",
+  "block.dragonsurvival.cave_nest_small": "Small Cave Nest",
+  "block.dragonsurvival.forest_nest_small": "Small Forest Nest",
+  "block.dragonsurvival.water_nest_small": "Small Sea Nest",
+  "block.dragonsurvival.medium_sea_nest": "Medium Sea Nest",
+  "block.dragonsurvival.medium_cave_nest": "Medium Cave Nest",
+  "block.dragonsurvival.medium_forest_nest": "Medium Forest Nest",
+  "block.dragonsurvival.big_forest_nest": "Big Forest Nest",
+  "block.dragonsurvival.big_sea_nest": "Big Sea Nest",
+  "block.dragonsurvival.big_cave_nest": "Big Cave Nest",
   "dragonsurvival:config.category.general.tooltip": "General config options for Dragon Survival",
   "dragonsurvival:config.category.spawnchances.tooltip": "Configurable spawn chances for entities",
 
@@ -35,5 +46,6 @@
   "ds.wings.enabled": "Enabled wings",
   "ds.wings.disabled": "Disabled wings",
   "ds.you.have.no.wings": "You have no wings",
-  "ds.dragon.grants.wings": "<Ender dragon> I bestow wings on you. Now get out of here"
+  "ds.dragon.grants.wings": "<Ender dragon> I bestow wings on you. Now get out of here",
+  "ds.space.occupied": "Not enough free space around"
 }

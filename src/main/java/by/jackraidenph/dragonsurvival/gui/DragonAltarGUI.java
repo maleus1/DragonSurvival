@@ -2,6 +2,7 @@ package by.jackraidenph.dragonsurvival.gui;
 
 import by.jackraidenph.dragonsurvival.DragonSurvivalMod;
 import by.jackraidenph.dragonsurvival.capability.DragonStateProvider;
+import by.jackraidenph.dragonsurvival.network.GiveNest;
 import by.jackraidenph.dragonsurvival.network.PacketSyncCapabilityMovement;
 import by.jackraidenph.dragonsurvival.network.ResetPlayer;
 import by.jackraidenph.dragonsurvival.network.SynchronizeDragonCap;
@@ -13,7 +14,8 @@ import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -54,6 +56,7 @@ public class DragonAltarGUI extends Screen {
         this.minecraft.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
 
         blit(startX, startY, 0, 0, 434 / 2, 496 / 2, xSize, ySize);
+
 
         if (mouseY > startY + 6 && mouseY < startY + 153) {
             if (mouseX > startX + 5 && mouseX < startX + 55) {
@@ -124,6 +127,7 @@ public class DragonAltarGUI extends Screen {
                 playerStateHandler.setIsHiding(false);
                 playerStateHandler.setLevel(DragonLevel.BABY);
                 playerStateHandler.setType(DragonType.NONE);
+                playerStateHandler.setHasWings(false);
                 DragonSurvivalMod.CHANNEL.sendToServer(new SynchronizeDragonCap(minecraft.player.getEntityId(), false, DragonType.NONE, DragonLevel.BABY, false, 20, false));
                 DragonSurvivalMod.CHANNEL.sendToServer(new ResetPlayer());
                 minecraft.player.closeScreen();
@@ -139,16 +143,17 @@ public class DragonAltarGUI extends Screen {
         player.closeScreen();
         DragonStateProvider.getCap(player).ifPresent(cap -> {
             DragonSurvivalMod.CHANNEL.sendToServer(new SynchronizeDragonCap(player.getEntityId(), false, type, DragonLevel.BABY, true, DragonLevel.BABY.initialHealth, false));
-            DragonSurvivalMod.CHANNEL.sendToServer(new PacketSyncCapabilityMovement(player.getEntityId(), 0, 0, 0, Vec3d.ZERO, Vec3d.ZERO));
+            DragonSurvivalMod.CHANNEL.sendToServer(new GiveNest(type));
+            player.world.playSound(player, player.getPosition(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 1, 0.7f);
+            DragonSurvivalMod.CHANNEL.sendToServer(new PacketSyncCapabilityMovement(player.getEntityId(), 0, 0, 0));
             cap.setIsDragon(true);
             cap.setType(type);
             cap.setLevel(DragonLevel.BABY);
+            cap.setHasWings(false);
             player.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(DragonLevel.BABY.initialHealth);
-            /*Random random = player.world.rand;
-            BlockPos.Mutable pos = new BlockPos.Mutable(random.nextInt(2000) - 1000, 256, random.nextInt(2000) - 1000);
-            while (player.world.getBlockState(pos.down()).isSolid())
-                pos.setPos(pos.down());
-            DragonSurvivalMod.CHANNEL.sendToServer(new SetRespawnPosition(pos));*/
+//                    Random random = player.world.rand;
+//                    BlockPos.Mutable pos = new BlockPos.Mutable(random.nextInt(2000) - 1000, player.getPosY(), random.nextInt(2000) - 1000);
+//                    DragonSurvivalMod.INSTANCE.sendToServer(new SetRespawnPosition(pos));
         });
     }
 }
