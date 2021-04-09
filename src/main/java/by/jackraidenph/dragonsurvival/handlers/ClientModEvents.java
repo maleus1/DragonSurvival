@@ -59,8 +59,9 @@ public class ClientModEvents {
         event.addSprite(new ResourceLocation(DragonSurvivalMod.MODID, "te/star/open_eye"));
         event.addSprite(new ResourceLocation(DragonSurvivalMod.MODID, "te/star/wind_vertical"));
 
-        for (String abilityTypeID : DragonSurvivalMod.ABILITY_TYPES.keySet())
-            event.addSprite(new ResourceLocation(DragonSurvivalMod.MODID, "ability/" + abilityTypeID));
+        for (AbilityType abilityType : DragonSurvivalMod.ABILITY_TYPES.values())
+            for (int i = 0; i < abilityType.getMaxLevel(); i++)
+                event.addSprite(new ResourceLocation(DragonSurvivalMod.MODID, "ability/" + i + "_" + abilityType.getId()));
 
         DragonSurvivalMod.LOGGER.info("Successfully added sprites!");
     }

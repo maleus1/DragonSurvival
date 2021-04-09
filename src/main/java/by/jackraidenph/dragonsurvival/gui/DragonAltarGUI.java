@@ -29,7 +29,6 @@ public class DragonAltarGUI extends Screen {
     private final int ySize = 500 / 2;
     private int guiLeft;
     private int guiTop;
-    private HashMap<Integer, Integer> wtf = Maps.newHashMap();
 
     public DragonAltarGUI(ITextComponent title) {
         super(title);

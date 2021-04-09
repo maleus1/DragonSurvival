@@ -50,6 +50,7 @@ public class CapabilityStorage implements Capability.IStorage<DragonStateHandler
             tag.putString("abilitySlot3", instance.getAbilityFromSlot(2).getId());
             tag.putString("abilitySlot4", instance.getAbilityFromSlot(3).getId());
             tag.putString("abilitySlot5", instance.getAbilityFromSlot(4).getId());
+            tag.put("unlockedAbilityContainer", instance.getUnlockedAbilities().serializeNBT());
             tag.putFloat("Health", instance.getHealth());
             tag.putBoolean("Has wings", instance.hasWings());
         }
@@ -79,6 +80,8 @@ public class CapabilityStorage implements Capability.IStorage<DragonStateHandler
             instance.setAbilityInSlot(DragonSurvivalMod.ABILITY_TYPES.get(tag.getString("abilitySlot3")).create(null), 2);
             instance.setAbilityInSlot(DragonSurvivalMod.ABILITY_TYPES.get(tag.getString("abilitySlot4")).create(null), 3);
             instance.setAbilityInSlot(DragonSurvivalMod.ABILITY_TYPES.get(tag.getString("abilitySlot5")).create(null), 4);
+
+            instance.getUnlockedAbilities().deserializeNBT(tag.get("unlockedAbilityContainer"));
             instance.setHealth(tag.getFloat("Health"));
             instance.setHasWings(tag.getBoolean("Has wings"));
         }

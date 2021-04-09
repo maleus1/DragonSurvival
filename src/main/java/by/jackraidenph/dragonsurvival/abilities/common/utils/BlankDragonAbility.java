@@ -25,6 +25,11 @@ public class BlankDragonAbility implements IDragonAbility {
     }
 
     @Override
+    public int getLevel() {
+        return 0;
+    }
+
+    @Override
     public ResourceLocation getIcon() {
         return new ResourceLocation(DragonSurvivalMod.MODID, "textures/ability/" + this.getId() + ".png");
     }
@@ -36,6 +41,11 @@ public class BlankDragonAbility implements IDragonAbility {
 
     @Override
     public void onKeyPressed() {
+
+    }
+
+    @Override
+    public void frame(float partialTicks) {
 
     }
 

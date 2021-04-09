@@ -187,7 +187,7 @@ public class EventHandler {
             return;
 
         if (livingEntity instanceof AnimalEntity && livingEntity.world.getRandom().nextInt(30) == 0) {
-            MagicalPredatorEntity beast = EntityTypesInit.MAGICAL_PREDATOR.create(livingEntity.world);
+            MagicalPredatorEntity beast = EntityTypesInit.magicalPredator.create(livingEntity.world);
             livingEntity.world.addEntity(beast);
             beast.setPositionAndUpdate(livingEntity.getPosX(), livingEntity.getPosY(), livingEntity.getPosZ());
         }
@@ -373,6 +373,13 @@ public class EventHandler {
                 }
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void onPassiveTick(TickEvent.PlayerTickEvent e){
+        DragonStateProvider.getCap(e.player).ifPresent(cap -> {
+
+        });
     }
 
     @SubscribeEvent

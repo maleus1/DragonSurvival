@@ -2,8 +2,8 @@ package by.jackraidenph.dragonsurvival.nest;
 
 import by.jackraidenph.dragonsurvival.capability.DragonStateHandler;
 import by.jackraidenph.dragonsurvival.capability.DragonStateProvider;
-import by.jackraidenph.dragonsurvival.handlers.BlockInit;
-import by.jackraidenph.dragonsurvival.handlers.TileEntityTypesInit;
+import by.jackraidenph.dragonsurvival.init.BlockInit;
+import by.jackraidenph.dragonsurvival.init.TileEntityTypesInit;
 import by.jackraidenph.dragonsurvival.util.DragonLevel;
 import by.jackraidenph.dragonsurvival.util.DragonType;
 import net.minecraft.block.Block;

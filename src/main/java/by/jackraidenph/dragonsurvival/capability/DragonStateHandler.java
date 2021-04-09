@@ -1,6 +1,7 @@
 package by.jackraidenph.dragonsurvival.capability;
 
 import by.jackraidenph.dragonsurvival.abilities.common.IDragonAbility;
+import by.jackraidenph.dragonsurvival.abilities.common.utils.AbilityHolderContainer;
 import by.jackraidenph.dragonsurvival.abilities.common.utils.BlankDragonAbility;
 import by.jackraidenph.dragonsurvival.util.DragonLevel;
 import by.jackraidenph.dragonsurvival.util.DragonType;
@@ -11,6 +12,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+
+import java.util.List;
 
 /**
  * Synchronize on login
@@ -29,6 +32,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
  * {@link by.jackraidenph.dragonsurvival.capability.CapabilityStorage}
  */
 public class DragonStateHandler {
+    private final DragonMovementData data = new DragonMovementData(0, 0, 0);
     private boolean isDragon;
     private boolean isHiding;
     private DragonType type = DragonType.NONE;
@@ -37,12 +41,40 @@ public class DragonStateHandler {
     private int selectedAbilitySlot = 0;
     private int maxMana = 100;
     private int currentMana = 0;
+    private AbilityHolderContainer unlockedAbilities = new AbilityHolderContainer();
     /**
      * Current health, must be equal to the player's health
      */
     private float health = level.initialHealth;
-    private final DragonMovementData data = new DragonMovementData(0, 0, 0);
     private boolean hasWings;
+
+    public AbilityHolderContainer getUnlockedAbilities(){
+        return unlockedAbilities;
+    }
+
+    public void setUnlockedAbilities(AbilityHolderContainer unlockedAbilities){
+        this.unlockedAbilities = unlockedAbilities;
+    }
+
+    public void unlockAbility(int level, int index, int stage) {
+        unlockedAbilities.unlockAbility(level - 1, index - 1, stage);
+    }
+
+    public void lockAbility(int level, int index, int stage) {
+        unlockedAbilities.lockAbility(level, index, stage);
+    }
+
+    public boolean isAbilityUnlocked(int level, int index) {
+        return unlockedAbilities.isAbilityUnlocked(level, index);
+    }
+
+    public List<Integer> getUnlockedAbilitiesForLevel(int level) {
+        return unlockedAbilities.getSkillsForLevel(level);
+    }
+
+    public int getUnlockedAbilityStage(int level, int index){
+        return unlockedAbilities.getStageForSkill(level, index);
+    }
 
     public boolean hasWings() {
         return hasWings;
@@ -60,16 +92,16 @@ public class DragonStateHandler {
         return currentMana;
     }
 
-    public void replenishMana(int mana){
+    public void setCurrentMana(int currentMana) {
+        this.currentMana = MathHelper.clamp(currentMana, 0, this.getMaxMana());
+    }
+
+    public void replenishMana(int mana) {
         this.setCurrentMana(this.getCurrentMana() + mana);
     }
 
-    public void consumeMana(int mana){
+    public void consumeMana(int mana) {
         this.setCurrentMana(this.getCurrentMana() - mana);
-    }
-
-    public void setCurrentMana(int currentMana) {
-        this.currentMana = MathHelper.clamp(currentMana, 0, this.getMaxMana());
     }
 
     public void setHasWings(boolean hasWings) {

@@ -1,12 +1,17 @@
 package by.jackraidenph.dragonsurvival.abilities.common;
 
-import by.jackraidenph.dragonsurvival.DragonSurvivalMod;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 
 public interface IDragonAbility {
 
     String getId();
+
+    int getLevel();
+
+    default int getMaxLevel() {
+        return 0;
+    }
 
     ResourceLocation getIcon();
 
@@ -15,6 +20,8 @@ public interface IDragonAbility {
     void onKeyPressed();
 
     void tick();
+
+    void frame(float partialTicks);
 
     public PlayerEntity getPlayerDragon();
 

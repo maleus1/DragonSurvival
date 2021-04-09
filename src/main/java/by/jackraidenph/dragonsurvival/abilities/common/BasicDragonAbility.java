@@ -17,11 +17,12 @@ public abstract class BasicDragonAbility implements IDragonAbility {
     private int cooldownTimer;
     private ResourceLocation iconTexture;
     private NumberFormat nf = NumberFormat.getInstance();
+    private int level = 0;
 
     public BasicDragonAbility(AbilityType<? extends IDragonAbility> type, PlayerEntity playerDragon) {
         this.playerDragon = playerDragon;
         this.type = type;
-        this.iconTexture = new ResourceLocation(DragonSurvivalMod.MODID, "textures/ability/" + this.getId() + ".png");
+        this.iconTexture = new ResourceLocation(DragonSurvivalMod.MODID, "textures/ability/" + level + "_" + this.getId() + ".png");
         this.nf.setMaximumFractionDigits(1);
     }
 
@@ -37,6 +38,11 @@ public abstract class BasicDragonAbility implements IDragonAbility {
 
     @Override
     public void tick() {
+
+    }
+
+    @Override
+    public void frame(float partialTicks) {
 
     }
 
@@ -97,4 +103,27 @@ public abstract class BasicDragonAbility implements IDragonAbility {
     public ResourceLocation getIcon() {
         return this.iconTexture;
     }
+
+    public void increaseLevel(int toIncrease) {
+        if(level < getMaxLevel())
+        this.level += toIncrease;
+    }
+
+    public void decreaseLevel(int toDecrease) {
+        if (level > 0)
+            this.level -= toDecrease;
+    }
+
+    @Override
+    public int getLevel() {
+        return this.level;
+    }
+
+    public void setLevel(int level) {
+        this.level = Math.min(0, level);
+    }
+
+    /*public ResourceLocation getUnderCursorTexture() {
+        return new ResourceLocation(iconTexture.getPath().replace("0_", "2_"));
+    }*/
 }

@@ -2,15 +2,13 @@ package by.jackraidenph.dragonsurvival.abilities.common.utils;
 
 import by.jackraidenph.dragonsurvival.util.DragonType;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedList;
 
 public class AbilityTree {
 
     private final DragonType dragonType;
-    private ArrayList<AbilityTreeLevel> levels = Lists.newArrayList();
+    private LinkedList<AbilityTreeLevel> levels = Lists.newLinkedList();
 
     public AbilityTree(DragonType dragonType) {
         this.dragonType = dragonType;
@@ -20,11 +18,11 @@ public class AbilityTree {
         return this.dragonType;
     }
 
-    public AbilityTreeLevel getLevel(int level) {
-        return this.levels.get(level);
+    public AbilityTreeLevel getLevel(int index) {
+        return this.levels.get(index);
     }
 
-    public ArrayList<AbilityTreeLevel> getLevelsList(int level) {
+    public LinkedList<AbilityTreeLevel> getLevelsList() {
         return this.levels;
     }
 
@@ -33,15 +31,15 @@ public class AbilityTree {
         return this;
     }
 
-    public AbilityTree removeLevel(AbilityTreeLevel level) {
-        this.levels.remove(level);
+    public AbilityTree removeLevel(int index) {
+        this.levels.remove(index);
         return this;
     }
 
     public static class AbilityTreeLevel {
 
         private final int index;
-        private HashMap<Integer, AbilityType> abilityTypes = Maps.newHashMap();
+        private LinkedList<AbilityType> abilityTypes = Lists.newLinkedList();
 
         public AbilityTreeLevel(int index) {
             this.index = index;
@@ -55,16 +53,16 @@ public class AbilityTree {
             return this.abilityTypes.get(index);
         }
 
-        public HashMap<Integer, AbilityType> getAbilityTypesList() {
+        public LinkedList<AbilityType> getAbilityTypesList() {
             return this.abilityTypes;
         }
 
-        public AbilityTreeLevel addAbility(Integer index, AbilityType type) {
-            this.abilityTypes.put(index, type);
+        public AbilityTreeLevel addAbility(int index, AbilityType type) {
+            this.abilityTypes.add(index, type);
             return this;
         }
 
-        public AbilityTreeLevel removeLevel(Integer index) {
+        public AbilityTreeLevel removeLevel(int index) {
             this.abilityTypes.remove(index);
             return this;
         }

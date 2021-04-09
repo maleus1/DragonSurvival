@@ -10,19 +10,20 @@ import net.minecraft.util.NonNullList;
 
 public class AbilityType<T extends IDragonAbility> {
 
-    public static void init(){}
-
-    public static final AbilityType<TestToggleableAbility> TEST_TOGGLEABLE_ABILITY_TYPE = register(AbilityType.Builder.create(TestToggleableAbility::new, "test_toggleable"));
-    public static final AbilityType<TestChargeableAbility> TEST_CHARGEABLE_ABILITY_TYPE = register(AbilityType.Builder.create(TestChargeableAbility::new, "test_chargeable"));
-    public static final AbilityType<TestActivatedAbility> TEST_ACTIVATED_ABILITY_TYPE = register(AbilityType.Builder.create(TestActivatedAbility::new, "test_activated"));
-    public static final AbilityType<BlankDragonAbility> BLANK_ABILITY = register(AbilityType.Builder.create(BlankDragonAbility::new, "blank"));
-
+    public static final AbilityType<TestToggleableAbility> TEST_TOGGLEABLE_ABILITY_TYPE = register(AbilityType.Builder.create(TestToggleableAbility::new, "test_toggleable", 2));
+    public static final AbilityType<TestChargeableAbility> TEST_CHARGEABLE_ABILITY_TYPE = register(AbilityType.Builder.create(TestChargeableAbility::new, "test_chargeable", 2));
+    public static final AbilityType<TestActivatedAbility> TEST_ACTIVATED_ABILITY_TYPE = register(AbilityType.Builder.create(TestActivatedAbility::new, "test_activated", 2));
+    public static final AbilityType<BlankDragonAbility> BLANK_ABILITY = register(AbilityType.Builder.create(BlankDragonAbility::new, "blank", 0));
     private final IFactory<? extends T> factory;
     private final String id;
-
-    public AbilityType(IFactory<? extends T> factory, String id) {
+    private final int maxLevel;
+    public AbilityType(IFactory<? extends T> factory, String id, int maxLevel) {
         this.factory = factory;
         this.id = id;
+        this.maxLevel = maxLevel;
+    }
+
+    public static void init() {
     }
 
     private static <T extends IDragonAbility> AbilityType<T> register(AbilityType.Builder<T> builder) {
@@ -54,6 +55,10 @@ public class AbilityType<T extends IDragonAbility> {
         return this.id;
     }
 
+    public int getMaxLevel() {
+        return this.maxLevel;
+    }
+
     public interface IFactory<T extends IDragonAbility> {
         T create(PlayerEntity playerEntity);
     }
@@ -61,18 +66,20 @@ public class AbilityType<T extends IDragonAbility> {
     public static final class Builder<T extends IDragonAbility> {
         private final IFactory<? extends T> factory;
         private final String id;
+        private final int maxLevel;
 
-        private Builder(IFactory<? extends T> factoryIn, String id) {
+        private Builder(IFactory<? extends T> factoryIn, String id, int maxLevel) {
             this.factory = factoryIn;
             this.id = id;
+            this.maxLevel = maxLevel;
         }
 
-        public static <T extends IDragonAbility> AbilityType.Builder<T> create(IFactory<? extends T> factoryIn, String id) {
-            return new AbilityType.Builder<>(factoryIn, id);
+        public static <T extends IDragonAbility> AbilityType.Builder<T> create(IFactory<? extends T> factoryIn, String id, int maxLevel) {
+            return new AbilityType.Builder<>(factoryIn, id, maxLevel);
         }
 
         public AbilityType<T> build() {
-            return new AbilityType<>(this.factory, this.id);
+            return new AbilityType<>(this.factory, this.id, this.maxLevel);
         }
     }
 }

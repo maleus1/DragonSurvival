@@ -3,15 +3,14 @@ package by.jackraidenph.dragonsurvival.handlers;
 import by.jackraidenph.dragonsurvival.DragonSurvivalMod;
 import by.jackraidenph.dragonsurvival.abilities.common.ChargeableDragonAbility;
 import by.jackraidenph.dragonsurvival.abilities.common.IDragonAbility;
-import by.jackraidenph.dragonsurvival.abilities.common.utils.AbilityType;
 import by.jackraidenph.dragonsurvival.capability.DragonStateHandler;
 import by.jackraidenph.dragonsurvival.capability.DragonStateProvider;
+import by.jackraidenph.dragonsurvival.gui.AbilityScreen;
 import by.jackraidenph.dragonsurvival.models.DragonModel;
 import by.jackraidenph.dragonsurvival.models.Wings;
 import by.jackraidenph.dragonsurvival.network.ActivateAbilityInSlot;
 import by.jackraidenph.dragonsurvival.network.IMessage;
 import by.jackraidenph.dragonsurvival.network.OpenDragonInventory;
-import by.jackraidenph.dragonsurvival.network.SynchronizeDragonAbilities;
 import by.jackraidenph.dragonsurvival.util.DragonLevel;
 import by.jackraidenph.dragonsurvival.util.DragonType;
 import com.google.common.collect.HashMultimap;
@@ -187,11 +186,14 @@ public class ClientEvents {
 
         if (ClientModEvents.TEST.isPressed()) {
             DragonStateProvider.getCap(Minecraft.getInstance().player).ifPresent(cap -> {
-                //cap.setAbilityInSlot(AbilityType.TEST_ACTIVATED_ABILITY_TYPE.create(Minecraft.getInstance().player), 0);
+                /*cap.setAbilityInSlot(AbilityType.TEST_ACTIVATED_ABILITY_TYPE.create(Minecraft.getInstance().player), 0);
                 DragonStateProvider.replenishMana(Minecraft.getInstance().player, 10);
-                IMessage messageSync = new SynchronizeDragonAbilities(cap.getSelectedAbilitySlot(), cap.getMaxMana(), cap.getCurrentMana(), AbilityType.toTypesList(cap.getAbilitySlots()));
-                DragonSurvivalMod.CHANNEL.sendToServer(messageSync);
+                cap.unlockAbility(1, 4, 1);
+                IMessage messageSync = new SynchronizeDragonAbilities(cap.getSelectedAbilitySlot(), cap.getMaxMana(), cap.getCurrentMana(), AbilityType.toTypesList(cap.getAbilitySlots()), cap.getUnlockedAbilities());
+                DragonSurvivalMod.CHANNEL.sendToServer(messageSync);*/
             });
+            if (!(Minecraft.getInstance().currentScreen instanceof AbilityScreen))
+                Minecraft.getInstance().displayGuiScreen(new AbilityScreen());
         }
 
         timer = (byte) ((modeAbility == GLFW.GLFW_RELEASE) ? timer < 3 ? timer + 1 : timer : 0);
