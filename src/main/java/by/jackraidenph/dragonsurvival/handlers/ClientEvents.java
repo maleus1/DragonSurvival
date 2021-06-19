@@ -1,18 +1,27 @@
 package by.jackraidenph.dragonsurvival.handlers;
 
 import by.jackraidenph.dragonsurvival.DragonSurvivalMod;
+import by.jackraidenph.dragonsurvival.abilities.common.ChargeableDragonAbility;
+import by.jackraidenph.dragonsurvival.abilities.common.IDragonAbility;
 import by.jackraidenph.dragonsurvival.capability.DragonStateHandler;
 import by.jackraidenph.dragonsurvival.capability.DragonStateProvider;
 import by.jackraidenph.dragonsurvival.gecko.DragonEntity;
 import by.jackraidenph.dragonsurvival.gecko.DragonModel;
+import by.jackraidenph.dragonsurvival.gui.AbilityScreen;
+import by.jackraidenph.dragonsurvival.init.EntityTypesInit;
+import by.jackraidenph.dragonsurvival.network.ActivateAbilityInSlot;
+import by.jackraidenph.dragonsurvival.network.IMessage;
 import by.jackraidenph.dragonsurvival.network.OpenDragonInventory;
 import by.jackraidenph.dragonsurvival.util.DragonLevel;
 import by.jackraidenph.dragonsurvival.util.DragonType;
 import com.google.common.collect.HashMultimap;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.GameSettings;
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.gui.screen.MainMenuScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.ItemRenderer;
@@ -20,6 +29,7 @@ import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingRenderer;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -27,16 +37,17 @@ import net.minecraft.item.*;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.GuiOpenEvent;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.RenderHandEvent;
-import net.minecraftforge.client.event.RenderPlayerEvent;
+import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL11;
 import software.bernie.geckolib3.core.processor.IBone;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Optional;
@@ -78,6 +89,9 @@ public class ClientEvents {
      * Durations of jumps
      */
     public static ConcurrentHashMap<Integer, Integer> dragonsJumpingTicks = new ConcurrentHashMap<>(20);
+    static ResourceLocation HUDTextures = new ResourceLocation(DragonSurvivalMod.MODID, "textures/gui/dragon_hud.png");
+    private static byte timer = 0;
+    private static byte abilityHoldTimer = 0;
 
     @SubscribeEvent
     public static void decreaseJumpDuration(TickEvent.PlayerTickEvent playerTickEvent) {
@@ -175,6 +189,113 @@ public class ClientEvents {
             DragonSurvivalMod.CHANNEL.sendToServer(new OpenDragonInventory());
             showingInventory = true;
         }
+    }
+
+
+    @SubscribeEvent
+    public static void onFarewell(GuiScreenEvent event) throws IllegalAccessException {
+        if (!DragonSurvivalMod.isFarewellDate())
+            return;
+
+        if (event.getGui() instanceof MainMenuScreen) {
+            MainMenuScreen screen = (MainMenuScreen) event.getGui();
+            Field splash = ObfuscationReflectionHelper.findField(MainMenuScreen.class, "splashText");
+            splash.setAccessible(true);
+            splash.set(screen, "Farewell, Red, The Wonderful Cat! (April 2002 - March 3, 2021)");
+        }
+    }
+
+    @SubscribeEvent
+    public static void abilityKeyBindingChecks(TickEvent.ClientTickEvent clientTickEvent) {
+
+        if ((Minecraft.getInstance().player == null) ||
+                (Minecraft.getInstance().world == null) ||
+                (clientTickEvent.phase != TickEvent.Phase.END) ||
+                (!DragonStateProvider.isDragon(Minecraft.getInstance().player)))
+            return;
+
+        PlayerEntity playerEntity = Minecraft.getInstance().player;
+
+        abilityHoldTimer = (byte) (ClientModEvents.ACTIVATE_ABILITY.isKeyDown() ? abilityHoldTimer < 3 ? abilityHoldTimer + 1 : abilityHoldTimer : 0);
+        byte modeAbility;
+        if (ClientModEvents.ACTIVATE_ABILITY.isKeyDown() && abilityHoldTimer > 1)
+            modeAbility = GLFW.GLFW_REPEAT;
+        else if (ClientModEvents.ACTIVATE_ABILITY.isKeyDown() && abilityHoldTimer == 1)
+            modeAbility = GLFW.GLFW_PRESS;
+        else
+            modeAbility = GLFW.GLFW_RELEASE;
+
+        int slot = DragonStateProvider.getCap(playerEntity).map(DragonStateHandler::getSelectedAbilitySlot).orElse(0);
+
+        if (ClientModEvents.TEST.isPressed()) {
+            DragonStateProvider.getCap(Minecraft.getInstance().player).ifPresent(cap -> {
+                /*cap.setAbilityInSlot(AbilityType.TEST_ACTIVATED_ABILITY_TYPE.create(Minecraft.getInstance().player), 0);
+                DragonStateProvider.replenishMana(Minecraft.getInstance().player, 10);
+                cap.unlockAbility(1, 4, 1);
+                IMessage messageSync = new SynchronizeDragonAbilities(cap.getSelectedAbilitySlot(), cap.getMaxMana(), cap.getCurrentMana(), AbilityType.toTypesList(cap.getAbilitySlots()), cap.getUnlockedAbilities());
+                DragonSurvivalMod.CHANNEL.sendToServer(messageSync);*/
+            });
+            if (!(Minecraft.getInstance().currentScreen instanceof AbilityScreen))
+                Minecraft.getInstance().displayGuiScreen(new AbilityScreen());
+        }
+
+        timer = (byte) ((modeAbility == GLFW.GLFW_RELEASE) ? timer < 3 ? timer + 1 : timer : 0);
+
+        if (timer > 1)
+            return;
+
+        IMessage message = new ActivateAbilityInSlot(slot, modeAbility);
+        DragonSurvivalMod.CHANNEL.sendToServer(message);
+
+        DragonStateProvider.getCap(playerEntity).ifPresent(dragonStateHandler -> {
+            IDragonAbility ability = dragonStateHandler.getAbilityFromSlot(slot);
+            if (!(ability instanceof ChargeableDragonAbility) && (modeAbility == GLFW.GLFW_PRESS))
+                ability.onKeyPressed();
+            else if (ability instanceof ChargeableDragonAbility) {
+                ChargeableDragonAbility chargeableDragonAbility = (ChargeableDragonAbility) ability;
+                if (modeAbility == GLFW.GLFW_RELEASE)
+                    chargeableDragonAbility.stopCharge();
+                else if (modeAbility == GLFW.GLFW_REPEAT) {
+                    chargeableDragonAbility.charge();
+                    chargeableDragonAbility.onKeyPressed();
+                }
+            }
+        });
+    }
+
+    @SubscribeEvent
+    public static void renderAbilityHud(RenderGameOverlayEvent.Post event) {
+
+        PlayerEntity playerEntity = Minecraft.getInstance().player;
+
+        if ((playerEntity == null) || !DragonStateProvider.isDragon(playerEntity))
+            return;
+
+        DragonStateProvider.getCap(playerEntity).ifPresent(cap -> {
+            if (event.getType() == RenderGameOverlayEvent.ElementType.HOTBAR) {
+                GL11.glPushMatrix();
+                GL11.glEnable(GL11.GL_BLEND);
+                GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
+                TextureManager textureManager = Minecraft.getInstance().getTextureManager();
+                MainWindow window = Minecraft.getInstance().getMainWindow();
+
+                GL11.glTranslated(0.0d, 0.125d, 0.0d);
+
+                for (int i = 0; i < 5; i++) {
+                    textureManager.bindTexture(cap.getAbilityFromSlot(i).getIcon());
+                    Screen.blit(window.getScaledWidth() - 20 * (5 - i) + 1, window.getScaledHeight() - 19, 1, 0, 0, 16, 16, 16, 16);
+                }
+
+                textureManager.bindTexture(new ResourceLocation("textures/gui/widgets.png"));
+                Screen.blit(window.getScaledWidth() - 102, window.getScaledHeight() - 22, 0, 0, 0, 102, 21, 256, 256);
+                Screen.blit(window.getScaledWidth() - 21 * (5 - cap.getSelectedAbilitySlot()) + 2, window.getScaledHeight() - 23, 2, 0, 22, 24, 24, 256, 256);
+
+
+                GL11.glDisable(GL11.GL_BLEND);
+                GL11.glPopMatrix();
+            }
+        });
     }
 
     @SubscribeEvent
@@ -399,5 +520,4 @@ public class ClientEvents {
         return texture + "empty_armor.png";
     }
 
-    static ResourceLocation HUDTextures = new ResourceLocation(DragonSurvivalMod.MODID, "textures/gui/dragon_hud.png");
 }

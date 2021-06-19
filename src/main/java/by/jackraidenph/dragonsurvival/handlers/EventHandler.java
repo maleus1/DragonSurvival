@@ -1,9 +1,14 @@
 package by.jackraidenph.dragonsurvival.handlers;
 
 import by.jackraidenph.dragonsurvival.DragonSurvivalMod;
+import by.jackraidenph.dragonsurvival.abilities.common.IDragonAbility;
+import by.jackraidenph.dragonsurvival.abilities.common.ToggleableDragonAbility;
 import by.jackraidenph.dragonsurvival.capability.DragonStateHandler;
 import by.jackraidenph.dragonsurvival.capability.DragonStateProvider;
 import by.jackraidenph.dragonsurvival.entity.MagicalPredatorEntity;
+import by.jackraidenph.dragonsurvival.init.BlockInit;
+import by.jackraidenph.dragonsurvival.init.EntityTypesInit;
+import by.jackraidenph.dragonsurvival.init.ItemsInit;
 import by.jackraidenph.dragonsurvival.nest.NestEntity;
 import by.jackraidenph.dragonsurvival.network.DiggingStatus;
 import by.jackraidenph.dragonsurvival.network.RefreshDragons;
@@ -11,17 +16,20 @@ import by.jackraidenph.dragonsurvival.network.StartJump;
 import by.jackraidenph.dragonsurvival.network.SynchronizeDragonCap;
 import by.jackraidenph.dragonsurvival.util.DragonLevel;
 import by.jackraidenph.dragonsurvival.util.DragonType;
+import net.minecraft.client.Minecraft;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.RedstoneOreBlock;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.AvoidEntityGoal;
+import net.minecraft.entity.item.FireworkRocketEntity;
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.merchant.villager.VillagerEntity;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.passive.horse.AbstractHorseEntity;
@@ -33,6 +41,9 @@ import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.item.*;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
+import net.minecraft.util.EntityPredicates;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.server.management.PlayerInteractionManager;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
@@ -43,12 +54,14 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.EntityMountEvent;
+import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
 import net.minecraftforge.event.entity.player.SleepingLocationCheckEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.Event;
@@ -57,6 +70,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Optional;
 
 @SuppressWarnings("unused")
 @Mod.EventBusSubscriber
@@ -129,6 +144,53 @@ public class EventHandler {
     }
 
     @SubscribeEvent
+    public static void onFarewell(PlayerWakeUpEvent event) {
+        if (!DragonSurvivalMod.isFarewellDate())
+            return;
+
+        if (event.getEntityLiving().world.getEntitiesWithinAABB(CatEntity.class,
+                event.getEntityLiving().getBoundingBox().grow(16.0D),
+                entity -> Optional.ofNullable(entity.getCustomName()).orElse(new StringTextComponent("")).getString().equals("Red"))
+                .size() < 1) {
+            CatEntity Red = EntityType.CAT.create(event.getEntity().world,
+                    null,
+                    new StringTextComponent("Red"),
+                    event.getPlayer(),
+                    event.getEntityLiving().getPosition(),
+                    SpawnReason.EVENT,
+                    true,
+                    true);
+            event.getEntityLiving().world.addEntity(Red);
+            if (Red != null) {
+                Red.setCatType(2);
+                Red.setPosition(event.getEntity().getPosX(), event.getEntity().getPosY(), event.getEntity().getPosZ());
+                Red.setTamedBy(event.getPlayer());
+                Red.getAISit().setSitting(true);
+                Red.setSitting(true);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onFarewellsEnd(TickEvent.PlayerTickEvent event) {
+        if (DragonSurvivalMod.isFarewellDate())
+            return;
+
+        CatEntity Red = null;
+        List list = event.player.world.getEntitiesWithinAABB(CatEntity.class, event.player.getBoundingBox().grow(16.0F), entity -> Optional.ofNullable(entity.getCustomName()).orElse(new StringTextComponent("")).getString().equals("Red"));
+        if (list.size() > 0)
+            Red = (CatEntity) list.get(0);
+
+        if (Red == null)
+            return;
+
+        event.player.world.addEntity(new FireworkRocketEntity(event.player.world, Red.getPosX(), Red.getPosY(), Red.getPosZ(), new ItemStack(Items.FEATHER)));
+        Red.remove();
+        if (event.player.world.isRemote)
+            event.player.sendStatusMessage(new StringTextComponent("Bye, human, see ya on the other side!"), true);
+    }
+
+    @SubscribeEvent
     public static void onCapabilityAttachment(AttachCapabilitiesEvent<Entity> event) {
         if (event.getObject() instanceof PlayerEntity) {
             event.addCapability(new ResourceLocation(DragonSurvivalMod.MODID, "playerstatehandler"), new DragonStateProvider());
@@ -136,6 +198,21 @@ public class EventHandler {
         }
     }
 
+    @SubscribeEvent
+    public static void onPlayerLeft(PlayerEvent.PlayerLoggedOutEvent event) {
+        DragonStateProvider.getCap(event.getEntity()).ifPresent(cap -> {
+            for (IDragonAbility ability : cap.getAbilitySlots())
+                if (ability instanceof ToggleableDragonAbility) {
+                    ((ToggleableDragonAbility) ability).stopAbility();
+                }
+        });
+        DragonStateProvider.getCap(Minecraft.getInstance().player).ifPresent(cap -> {
+            for (IDragonAbility ability : cap.getAbilitySlots())
+                if (ability instanceof ToggleableDragonAbility) {
+                    ((ToggleableDragonAbility) ability).stopAbility();
+                }
+        });
+    }
 
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent e) {
@@ -144,7 +221,7 @@ public class EventHandler {
             return;
 
         if (livingEntity instanceof AnimalEntity && livingEntity.world.getRandom().nextInt(30) == 0) {
-            MagicalPredatorEntity beast = EntityTypesInit.MAGICAL_BEAST.create(livingEntity.world);
+            MagicalPredatorEntity beast = EntityTypesInit.MAGICAL_PREDATOR.create(livingEntity.world);
             livingEntity.world.addEntity(beast);
             beast.setPositionAndUpdate(livingEntity.getPosX(), livingEntity.getPosY(), livingEntity.getPosZ());
         }
@@ -160,6 +237,7 @@ public class EventHandler {
                         capNew.setMovementData(movementData.bodyYaw, movementData.headYaw, movementData.headPitch);
                         capNew.setLevel(capOld.getLevel());
                         capNew.setType(capOld.getType());
+                        capNew.setAbilitySlotList(capOld.getAbilitySlots());
                         capNew.setHasWings(capOld.hasWings());
                         e.getPlayer().getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(e.getOriginal().getAttribute(SharedMonsterAttributes.MAX_HEALTH).getBaseValue());
                     }
@@ -346,6 +424,22 @@ public class EventHandler {
             }
         }
     }
+
+    @SubscribeEvent
+    public static void onPassiveTick(TickEvent.PlayerTickEvent e){
+        DragonStateProvider.getCap(e.player).ifPresent(cap -> {
+
+        });
+    }
+
+    @SubscribeEvent
+    public static void RedNoDamageEvent(LivingHurtEvent event) {
+        LivingEntity living = event.getEntityLiving();
+        if ((living instanceof CatEntity) && living.hasCustomName() && living.getCustomName().getString().equals("Red")) {
+            event.setCanceled(true);
+        }
+    }
+
 
     @SubscribeEvent
     public static void createAltar(PlayerInteractEvent.RightClickBlock rightClickBlock) {

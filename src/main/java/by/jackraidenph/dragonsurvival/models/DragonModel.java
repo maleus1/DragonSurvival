@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 @Deprecated
-public class DragonModel2 extends EntityModel<Entity> {
+public class DragonModel extends EntityModel<Entity> {
     public final ModelRenderer LeftFrontLeg;
     public final ModelRenderer Forearm1;
     public final ModelRenderer Elbow1;
@@ -57,7 +57,7 @@ public class DragonModel2 extends EntityModel<Entity> {
     private final ModelRenderer muscles;
     public boolean firstPerson;
 
-    public DragonModel2(boolean firstPerson) {
+    public DragonModel(boolean firstPerson) {
         this.firstPerson = firstPerson;
         textureWidth = 128;
         textureHeight = 128;

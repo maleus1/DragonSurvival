@@ -1,4 +1,4 @@
-package by.jackraidenph.dragonsurvival.handlers;
+package by.jackraidenph.dragonsurvival.init;
 
 import by.jackraidenph.dragonsurvival.DragonSurvivalMod;
 import by.jackraidenph.dragonsurvival.entity.MagicalPredatorEntity;
@@ -30,8 +30,8 @@ public class EntityTypesInit {
     private static final List<EntityType<?>> entities = Lists.newArrayList();
     private static final List<Item> spawnEggs = Lists.newArrayList();
 
-    public static EntityType<MagicalPredatorEntity> MAGICAL_BEAST;
     public static EntityType<DragonEntity> dragonEntity;
+    public static EntityType<MagicalPredatorEntity> MAGICAL_PREDATOR;
 
     private static <T extends CreatureEntity> EntityType<T> createEntity(Class<T> entityClass, EntityType.IFactory<T> factory, float width, float height, int eggPrimary, int eggSecondary) {
 
@@ -66,7 +66,7 @@ public class EntityTypesInit {
 
     @SubscribeEvent
     public static void registerSpawnEggs(RegistryEvent.Register<Item> event) {
-        MAGICAL_BEAST = createEntity(MagicalPredatorEntity.class, MagicalPredatorEntity::new, 1.1f, 1.5625f, 0x000000, 0xFFFFFF);
+        MAGICAL_PREDATOR = createEntity(MagicalPredatorEntity.class, MagicalPredatorEntity::new, 1.1f, 1.5625f, 0x000000, 0xFFFFFF);
         for (Item spawnEgg : spawnEggs) {
             Preconditions.checkNotNull(spawnEgg.getRegistryName(), "registry name is null");
             event.getRegistry().register(spawnEgg);
@@ -98,7 +98,7 @@ public class EntityTypesInit {
             throw new IllegalArgumentException("Do not leave the BiomeDictionary type inclusion list empty. If you wish to disable spawning of an entity, set the weight to 0 instead.");
         }
         for (Biome biome : spawnableBiomes) {
-            biome.getSpawns(EntityClassification.MONSTER).add(new Biome.SpawnListEntry(MAGICAL_BEAST, ConfigurationHandler.SPAWN.weight.get(), ConfigurationHandler.SPAWN.min.get(), ConfigurationHandler.SPAWN.max.get()));
+            biome.getSpawns(EntityClassification.MONSTER).add(new Biome.SpawnListEntry(MAGICAL_PREDATOR, ConfigurationHandler.SPAWN.weight.get(), ConfigurationHandler.SPAWN.min.get(), ConfigurationHandler.SPAWN.max.get()));
         }
     }
 }

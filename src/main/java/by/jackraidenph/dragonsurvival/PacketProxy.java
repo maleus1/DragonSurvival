@@ -1,10 +1,11 @@
 package by.jackraidenph.dragonsurvival;
 
+import by.jackraidenph.dragonsurvival.abilities.common.utils.AbilityType;
 import by.jackraidenph.dragonsurvival.capability.DragonStateProvider;
 import by.jackraidenph.dragonsurvival.gecko.DragonEntity;
 import by.jackraidenph.dragonsurvival.handlers.ClientEvents;
-import by.jackraidenph.dragonsurvival.handlers.EntityTypesInit;
 import by.jackraidenph.dragonsurvival.handlers.FlightController;
+import by.jackraidenph.dragonsurvival.init.EntityTypesInit;
 import by.jackraidenph.dragonsurvival.network.PacketSyncCapabilityMovement;
 import by.jackraidenph.dragonsurvival.network.SyncLevel;
 import by.jackraidenph.dragonsurvival.network.SynchronizeDragonCap;
@@ -75,6 +76,7 @@ public class PacketProxy {
                         dragonStateHandler.setLevel(synchronizeDragonCap.dragonLevel);
                         dragonStateHandler.setType(synchronizeDragonCap.dragonType);
                         dragonStateHandler.setIsHiding(synchronizeDragonCap.hiding);
+                        dragonStateHandler.setHealth(synchronizeDragonCap.health);
                         dragonStateHandler.setHasWings(synchronizeDragonCap.hasWings);
                         if (!dragonStateHandler.hasWings())
                             FlightController.wingsEnabled = false;

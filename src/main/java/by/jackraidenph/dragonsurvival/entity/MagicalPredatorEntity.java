@@ -2,7 +2,7 @@ package by.jackraidenph.dragonsurvival.entity;
 
 import by.jackraidenph.dragonsurvival.DragonSurvivalMod;
 import by.jackraidenph.dragonsurvival.capability.DragonStateProvider;
-import by.jackraidenph.dragonsurvival.handlers.BlockInit;
+import by.jackraidenph.dragonsurvival.init.BlockInit;
 import by.jackraidenph.dragonsurvival.network.PacketSyncXPDevour;
 import by.jackraidenph.dragonsurvival.util.ConfigurationHandler;
 import net.minecraft.block.BlockState;

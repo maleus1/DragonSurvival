@@ -1,9 +1,13 @@
 package by.jackraidenph.dragonsurvival.handlers;
 
 import by.jackraidenph.dragonsurvival.DragonSurvivalMod;
+import by.jackraidenph.dragonsurvival.abilities.common.utils.AbilityType;
 import by.jackraidenph.dragonsurvival.gecko.DragonModel;
 import by.jackraidenph.dragonsurvival.gecko.DragonRenderer;
 import by.jackraidenph.dragonsurvival.gui.DragonScreen;
+import by.jackraidenph.dragonsurvival.init.BlockInit;
+import by.jackraidenph.dragonsurvival.init.EntityTypesInit;
+import by.jackraidenph.dragonsurvival.init.TileEntityTypesInit;
 import by.jackraidenph.dragonsurvival.nest.NestScreen;
 import by.jackraidenph.dragonsurvival.renderer.MagicalPredatorRenderer;
 import by.jackraidenph.dragonsurvival.renderer.PredatorStarTESR;
@@ -39,6 +43,8 @@ public class ClientModEvents {
     public static KeyBinding TOGGLE_WINGS;
 
     public static final String SKINS = "https://raw.githubusercontent.com/DragonSurvivalTeam/DragonSurvival/master/src/test/resources/";
+    public static final KeyBinding ACTIVATE_ABILITY = new KeyBinding("Activates chosen ability", GLFW.GLFW_KEY_F, "Dragon Survival");
+    public static final KeyBinding TEST = new KeyBinding("TEST", GLFW.GLFW_KEY_C, "Dragon Survival");
 
     @SubscribeEvent
     public static void onTextureStitchEvent(TextureStitchEvent.Pre event) {
@@ -46,6 +52,11 @@ public class ClientModEvents {
         event.addSprite(new ResourceLocation(DragonSurvivalMod.MODID, "te/star/wind"));
         event.addSprite(new ResourceLocation(DragonSurvivalMod.MODID, "te/star/open_eye"));
         event.addSprite(new ResourceLocation(DragonSurvivalMod.MODID, "te/star/wind_vertical"));
+
+        for (AbilityType abilityType : DragonSurvivalMod.ABILITY_TYPES.values())
+            for (int i = 0; i < abilityType.getMaxLevel(); i++)
+                event.addSprite(new ResourceLocation(DragonSurvivalMod.MODID, "ability/" + i + "_" + abilityType.getId()));
+
         DragonSurvivalMod.LOGGER.info("Successfully added sprites!");
     }
 
@@ -58,7 +69,7 @@ public class ClientModEvents {
         RenderTypeLookup.setRenderLayer(BlockInit.bigCaveNest, RenderType.getCutout());
         RenderTypeLookup.setRenderLayer(BlockInit.bigForestNest, RenderType.getCutout());
         RenderTypeLookup.setRenderLayer(BlockInit.bigSeaNest, RenderType.getCutout());
-        RenderingRegistry.registerEntityRenderingHandler(EntityTypesInit.MAGICAL_BEAST, MagicalPredatorRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityTypesInit.MAGICAL_PREDATOR, MagicalPredatorRenderer::new);
         ClientRegistry.bindTileEntityRenderer(TileEntityTypesInit.PREDATOR_STAR_TILE_ENTITY_TYPE, PredatorStarTESR::new);
         ShaderHelper.initShaders();
 
@@ -67,6 +78,9 @@ public class ClientModEvents {
 
         TOGGLE_WINGS = new KeyBinding("Toggle wings", GLFW.GLFW_KEY_G, "Dragon Survival");
         ClientRegistry.registerKeyBinding(TOGGLE_WINGS);
+
+        ClientRegistry.registerKeyBinding(ACTIVATE_ABILITY);
+        ClientRegistry.registerKeyBinding(TEST);
 
         RenderingRegistry.registerEntityRenderingHandler(EntityTypesInit.dragonEntity, manager -> new DragonRenderer(manager, ClientEvents.dragonModel = new DragonModel()));
 

@@ -1,7 +1,9 @@
 package by.jackraidenph.dragonsurvival;
 
 import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.math.MathHelper;
+import org.lwjgl.glfw.GLFW;
 
 public class Functions {
     public static float getDefaultXRightLimbRotation(float limbSwing, float swingAmount) {
@@ -43,5 +45,4 @@ public class Functions {
     public static void blit(int startX, int startY, float textureX, float textureY, int width, int height, int sizeX, int sizeY) {
         AbstractGui.blit(startX, startY, textureX, textureY, width, height, sizeX, sizeY);
     }
-
 }

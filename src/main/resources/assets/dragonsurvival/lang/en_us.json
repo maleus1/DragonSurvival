@@ -9,6 +9,8 @@
   "item.dragonsurvival.elder_dragon_bone": "Elder Dragon Bone",
   "item.dragonsurvival.charged_coal": "Charged Coal",
   "item.dragonsurvival.charred_meat": "Charred Meat",
+
+  "_comment": "Block",
   "item.dragonsurvival.elder_dragon_dust": "Elder Dragon Dust",
 
   "block.dragonsurvival.dragon_gate": "Dragon Door",
@@ -33,12 +35,17 @@
 
   "death.attack.dryout": "You died from dryout",
 
-  "ds.cave_dragon_choice": "You have chosen to be a Cave dragon.",
-  "ds.forest_dragon_choice": "You have chosen to be a Forest dragon.",
-  "ds.sea_dragon_choice": "You have chosen to be a Sea dragon.",
+  "ds.dragon_altar_warning_header": "WARNING:",
+  "ds.skill_cooldown_check_failure": "The ability is not ready yet!",
+  "ds.skill_mana_check_failure": "Not enough mana!",
+  "ds.dragon_altar_warning_text": " after making your choice you will die, lose all progress and find yourself in an unknown place without any items.",
+  "ds.cave_dragon_choice": "You have chosen to become a Cave dragon.",
+  "ds.forest_dragon_choice": "You have chosen to become a Forest dragon.",
+  "ds.sea_dragon_choice": "You have chosen to become a Sea dragon.",
   "ds.choice_human": "You have chosen to become a human.",
-  "ds.wings.enabled": "You have spread your wings",
-  "ds.wings.disabled": "You have folded your wings",
+  "ds.choice_already_human": "You can't become a human as you are already a human.",
+  "ds.wings.enabled": "Enabled wings",
+  "ds.wings.disabled": "Disabled wings",
   "ds.you.have.no.wings": "You have no wings",
   "ds.dragon.grants.wings": "<Ender dragon> I bestow wings on you. Now get out of here!",
   "ds.space.occupied": "Not enough free space around",

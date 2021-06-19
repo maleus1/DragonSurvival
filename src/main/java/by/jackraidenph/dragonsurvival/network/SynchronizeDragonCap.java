@@ -1,7 +1,9 @@
 package by.jackraidenph.dragonsurvival.network;
 
+import by.jackraidenph.dragonsurvival.abilities.common.utils.AbilityType;
 import by.jackraidenph.dragonsurvival.util.DragonLevel;
 import by.jackraidenph.dragonsurvival.util.DragonType;
+import net.minecraft.util.NonNullList;
 
 public class SynchronizeDragonCap {
 

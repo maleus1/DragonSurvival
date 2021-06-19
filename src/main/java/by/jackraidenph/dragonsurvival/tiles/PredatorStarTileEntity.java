@@ -1,18 +1,10 @@
 package by.jackraidenph.dragonsurvival.tiles;
 
-import by.jackraidenph.dragonsurvival.blocks.PredatorStarBlock;
-import by.jackraidenph.dragonsurvival.entity.MagicalPredatorEntity;
-import by.jackraidenph.dragonsurvival.handlers.TileEntityTypesInit;
-import net.minecraft.entity.CreatureEntity;
-import net.minecraft.entity.Entity;
+import by.jackraidenph.dragonsurvival.init.TileEntityTypesInit;
 import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.math.AxisAlignedBB;
 
-import java.util.List;
-
-public class PredatorStarTileEntity extends TileEntity implements ITickableTileEntity {
+public class PredatorStarTileEntity extends BaseBlockEntity implements ITickableTileEntity {
     private int ticksExisted;
     private float activeRotation;
 

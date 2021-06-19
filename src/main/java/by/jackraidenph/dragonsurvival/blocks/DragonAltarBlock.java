@@ -1,7 +1,7 @@
 package by.jackraidenph.dragonsurvival.blocks;
 
 import by.jackraidenph.dragonsurvival.gui.DragonAltarGUI;
-import by.jackraidenph.dragonsurvival.handlers.TileEntityTypesInit;
+import by.jackraidenph.dragonsurvival.init.TileEntityTypesInit;
 import by.jackraidenph.dragonsurvival.tiles.AltarEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;

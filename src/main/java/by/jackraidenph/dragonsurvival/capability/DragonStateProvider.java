@@ -8,6 +8,8 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 
+import javax.annotation.Nonnull;
+
 public class DragonStateProvider implements ICapabilitySerializable<CompoundNBT> {
 
     @CapabilityInject(DragonStateHandler.class)
@@ -22,6 +24,23 @@ public class DragonStateProvider implements ICapabilitySerializable<CompoundNBT>
         return getCap(entity).filter(DragonStateHandler::isDragon).isPresent();
     }
 
+    public static int getCurrentMana(Entity entity) {
+        return getCap(entity).map(DragonStateHandler::getCurrentMana).orElseGet(() -> 0);
+    }
+
+    public static void setMaxMana(Entity entity, int mana) {
+        getCap(entity).ifPresent(cap -> cap.setMaxMana(mana));
+    }
+
+    public static void replenishMana(Entity entity, int mana) {
+        getCap(entity).ifPresent(cap -> cap.replenishMana(mana));
+    }
+
+    public static void consumeMana(Entity entity, int mana) {
+        getCap(entity).ifPresent(cap -> cap.consumeMana(mana));
+    }
+
+    @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
         return cap == DRAGON_CAPABILITY ? instance.cast() : LazyOptional.empty();

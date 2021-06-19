@@ -1,20 +1,26 @@
 package by.jackraidenph.dragonsurvival;
 
+import by.jackraidenph.dragonsurvival.abilities.common.IDragonAbility;
+import by.jackraidenph.dragonsurvival.abilities.common.utils.AbilityTree;
+import by.jackraidenph.dragonsurvival.abilities.common.utils.AbilityType;
 import by.jackraidenph.dragonsurvival.capability.Capabilities;
 import by.jackraidenph.dragonsurvival.capability.DragonStateHandler;
 import by.jackraidenph.dragonsurvival.capability.DragonStateProvider;
+import by.jackraidenph.dragonsurvival.init.BlockInit;
+import by.jackraidenph.dragonsurvival.init.EntityTypesInit;
 import by.jackraidenph.dragonsurvival.gecko.DragonEntity;
-import by.jackraidenph.dragonsurvival.handlers.BlockInit;
 import by.jackraidenph.dragonsurvival.handlers.ClientEvents;
-import by.jackraidenph.dragonsurvival.handlers.EntityTypesInit;
 import by.jackraidenph.dragonsurvival.nest.DismantleNest;
 import by.jackraidenph.dragonsurvival.nest.NestEntity;
 import by.jackraidenph.dragonsurvival.nest.SleepInNest;
 import by.jackraidenph.dragonsurvival.nest.ToggleRegeneration;
+import by.jackraidenph.dragonsurvival.handlers.AbilityTickingHandler;
+import by.jackraidenph.dragonsurvival.init.AbilityTreeInit;
 import by.jackraidenph.dragonsurvival.network.*;
 import by.jackraidenph.dragonsurvival.util.ConfigurationHandler;
 import by.jackraidenph.dragonsurvival.util.DragonLevel;
 import by.jackraidenph.dragonsurvival.util.DragonType;
+import com.google.common.collect.ImmutableMap;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -56,18 +62,29 @@ import software.bernie.geckolib3.GeckoLib;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import java.time.LocalDate;
+import java.time.Month;
+import java.util.HashMap;
+
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 
 @Mod(DragonSurvivalMod.MODID)
 public class DragonSurvivalMod {
     public static final String MODID = "dragonsurvival";
+    public static final HashMap<String, AbilityType<? extends IDragonAbility>> ABILITY_TYPES = new HashMap<>();
+    public static final ImmutableMap<DragonType, AbilityTree> ABILITY_TREE_MAP = ImmutableMap.of(
+            DragonType.CAVE, AbilityTreeInit.CAVE_DRAGON_TREE,
+            DragonType.SEA, AbilityTreeInit.SEA_DRAGON_TREE,
+            DragonType.FOREST, AbilityTreeInit.FOREST_DRAGON_TREE
+    );
     public static final Logger LOGGER = LogManager.getLogger("Dragon Survival");
     private static final String PROTOCOL_VERSION = "1";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(new ResourceLocation(MODID, "main"),
             () -> PROTOCOL_VERSION, PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals);
 
     private static int nextPacketId = 0;
+    private static AbilityTickingHandler HANDLER;
 
     public DragonSurvivalMod() {
         GeckoLib.initialize();
@@ -76,6 +93,23 @@ public class DragonSurvivalMod {
         MinecraftForge.EVENT_BUS.addListener(this::onServerStart);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigurationHandler.SPEC);
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(getTickHandler());
+
+        //IMPORTANT TO ENSURE INITIALIZATION ORDER
+        AbilityType.init();
+        AbilityTreeInit.init();
+    }
+
+    public static boolean isFarewellDate(){
+        return (LocalDate.now().getDayOfMonth() == 3) && (LocalDate.now().getMonth() == Month.MARCH);
+    }
+
+    public static AbilityTickingHandler getTickHandler() {
+        if (HANDLER == null) {
+            HANDLER = new AbilityTickingHandler();
+            return HANDLER;
+        }
+        return HANDLER;
     }
 
     private static <T> void register(Class<T> clazz, IMessage<T> message) {
@@ -94,6 +128,8 @@ public class DragonSurvivalMod {
         register(SynchronizeNest.class, new SynchronizeNest());
         register(OpenDragonInventory.class, new OpenDragonInventory());
         register(SyncLevel.class, new SyncLevel());
+        register(ActivateAbilityInSlot.class, new ActivateAbilityInSlot());
+        register(SynchronizeDragonAbilities.class, new SynchronizeDragonAbilities());
         register(ToggleWings.class, new ToggleWings());
 
         //TODO synchronize health
@@ -112,7 +148,9 @@ public class DragonSurvivalMod {
             DragonType type = DragonType.values()[packetBuffer.readByte()];
             boolean hiding = packetBuffer.readBoolean();
             boolean isDragon = packetBuffer.readBoolean();
-            return new SynchronizeDragonCap(id, hiding, type, level, isDragon, packetBuffer.readFloat(), packetBuffer.readBoolean());
+            float health = packetBuffer.readFloat();
+
+            return new SynchronizeDragonCap(id, hiding, type, level, isDragon, health, packetBuffer.readBoolean());
         }, (synchronizeDragonCap, contextSupplier) -> {
             if (contextSupplier.get().getDirection().getReceptionSide() == LogicalSide.SERVER) {
                 CHANNEL.send(PacketDistributor.ALL.noArg(), synchronizeDragonCap);

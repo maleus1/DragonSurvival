@@ -28,7 +28,6 @@ public class DragonAltarGUI extends Screen {
     private final int ySize = 500 / 2;
     private int guiLeft;
     private int guiTop;
-    private HashMap<Integer, Integer> wtf = Maps.newHashMap();
 
     public DragonAltarGUI(ITextComponent title) {
         super(title);
@@ -43,9 +42,13 @@ public class DragonAltarGUI extends Screen {
     public void render(int mouseX, int mouseY, float partialTicks) {
         if (this.minecraft == null)
             return;
+
         this.renderBackground();
+
         int startX = this.guiLeft;
         int startY = this.guiTop;
+
+        this.renderBackground();
         super.render(mouseX, mouseY, partialTicks);
 
         this.minecraft.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
@@ -110,6 +113,11 @@ public class DragonAltarGUI extends Screen {
 
         addButton(new ExtendedButton(guiLeft + 162, guiTop + 6, 49, 147, "Human", b -> {
             DragonStateProvider.getCap(minecraft.player).ifPresent(playerStateHandler -> {
+                if (!playerStateHandler.isDragon()) {
+                    minecraft.player.closeScreen();
+                    minecraft.player.sendMessage(new TranslationTextComponent("ds.choice_already_human"));
+                    return;
+                }
                 playerStateHandler.setIsDragon(false);
                 playerStateHandler.setIsHiding(false);
                 playerStateHandler.setLevel(DragonLevel.BABY);
