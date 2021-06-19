@@ -53,7 +53,7 @@ public class ClientModEvents {
         event.addSprite(new ResourceLocation(DragonSurvivalMod.MODID, "te/star/open_eye"));
         event.addSprite(new ResourceLocation(DragonSurvivalMod.MODID, "te/star/wind_vertical"));
 
-        for (AbilityType abilityType : DragonSurvivalMod.ABILITY_TYPES.values())
+        for (AbilityType<?> abilityType : DragonSurvivalMod.ABILITY_TYPES.values())
             for (int i = 0; i < abilityType.getMaxLevel(); i++)
                 event.addSprite(new ResourceLocation(DragonSurvivalMod.MODID, "ability/" + i + "_" + abilityType.getId()));
 
@@ -84,29 +84,6 @@ public class ClientModEvents {
 
         RenderingRegistry.registerEntityRenderingHandler(EntityTypesInit.dragonEntity, manager -> new DragonRenderer(manager, ClientEvents.dragonModel = new DragonModel()));
 
-//        if (ConfigurationHandler.disableClientHandlerSpam.get()) {
-//            Field loggerfield = ClientPlayNetHandler.class.getDeclaredFields()[0];
-//            loggerfield.setAccessible(true);
-//            if (loggerfield.getType() == Logger.class) {
-//                try {
-//                    Logger logger = (Logger) loggerfield.get(ClientPlayNetHandler.class);
-//                    if (logger instanceof org.apache.logging.log4j.core.Logger)
-//                    {
-//                        org.apache.logging.log4j.core.Logger logr= (org.apache.logging.log4j.core.Logger) logger;
-//                        Field privateconfig=logr.getClass().getDeclaredField("privateConfig");
-//                        privateconfig.setAccessible(true);
-//                        Object ob=privateconfig.get(logr);
-//                        Field level=ob.getClass().getDeclaredField("loggerConfigLevel");
-//                        level.setAccessible(true);
-//                        level.set(ob,Level.ERROR);
-//                        logr.get().setLevel(Level.ERROR);
-//                        logr.setLevel(Level.ERROR);
-//                    }
-//                } catch (IllegalAccessException | NoSuchFieldException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
     }
 
     /**
