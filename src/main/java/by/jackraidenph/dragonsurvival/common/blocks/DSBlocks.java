@@ -20,6 +20,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.ObjectHolder;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 @ObjectHolder(DragonSurvivalMod.MODID)
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -31,7 +32,7 @@ public class DSBlocks
     public static DragonDoor legacyDoor, ironDoor, murdererDoor, sleeperDoor, stoneDoor;
     public static DragonDoor caveDoor, forestDoor, seaDoor;
 
-    public static SmallDragonDoor spruceSmallDoor, acaciaSmallDoor, birchSmallDoor, jungleSmallDoor, oakSmallDoor, darkOakSmallDoor, crimsonSmallDoor, warpedSmallDoor;
+    public static ArrayList<SmallDragonDoor> smallDragonDoors;
 
     public static SourceOfMagicBlock forestSourceOfMagic, caveSourceOfMagic, seaSourceOfMagic;
 
@@ -50,6 +51,12 @@ public class DSBlocks
     public static Block dragonMemoryBlock;
 
     public static TreasureBlock treasureDebris, treasureDiamond, treasureEmerald, treasureCopper, treasureGold, treasureIron;
+
+    public static ArrayList<Block> transparentBlocks;
+
+    public static void enableTransparency(Block block) {
+        transparentBlocks.add(block);
+    }
 
     @SubscribeEvent
     public static void registerBlocks(final RegistryEvent.Register<Block> event) {
@@ -92,18 +99,17 @@ public class DSBlocks
         caveDoor = registerBlock(new DragonDoor(Block.Properties.of(Material.STONE, Blocks.BLACKSTONE.defaultMaterialColor()).requiresCorrectToolForDrops().strength(7.0F).sound(SoundType.GILDED_BLACKSTONE).noOcclusion(), DragonDoor.OpenRequirement.CAVE), "cave_dragon_door", forgeRegistry);
         forestDoor = registerBlock(new DragonDoor(Block.Properties.of(Material.STONE, Blocks.DARK_PRISMARINE.defaultMaterialColor()).requiresCorrectToolForDrops().strength(7.0F).sound(SoundType.STONE).noOcclusion(), DragonDoor.OpenRequirement.FOREST), "forest_dragon_door", forgeRegistry);
         seaDoor = registerBlock(new DragonDoor(Block.Properties.of(Material.WOOD, MaterialColor.COLOR_BROWN).requiresCorrectToolForDrops().strength(7.0F).sound(SoundType.WOOD).noOcclusion(), DragonDoor.OpenRequirement.SEA), "sea_dragon_door", forgeRegistry);
-
         ironDoor = registerBlock(new DragonDoor(Block.Properties.of(Material.METAL, MaterialColor.METAL).requiresCorrectToolForDrops().strength(5.0F).sound(SoundType.METAL).noOcclusion(), DragonDoor.OpenRequirement.POWER), "iron_dragon_door", forgeRegistry);
 
         // small doors
-        oakSmallDoor = registerBlock(new SmallDragonDoor(Block.Properties.of(Material.WOOD, Blocks.OAK_PLANKS.defaultMaterialColor()).strength(3.0F).sound(SoundType.WOOD).noOcclusion(), SmallDragonDoor.OpenRequirement.NONE), "oak_small_dragon_door", forgeRegistry);
-        spruceSmallDoor = registerBlock(new SmallDragonDoor(Block.Properties.of(Material.WOOD, Blocks.SPRUCE_PLANKS.defaultMaterialColor()).strength(3.0F).sound(SoundType.WOOD).noOcclusion(), SmallDragonDoor.OpenRequirement.NONE), "spruce_small_dragon_door", forgeRegistry);
-        acaciaSmallDoor = registerBlock(new SmallDragonDoor(Block.Properties.of(Material.WOOD, Blocks.ACACIA_PLANKS.defaultMaterialColor()).strength(3.0F).sound(SoundType.WOOD).noOcclusion(), SmallDragonDoor.OpenRequirement.NONE), "acacia_small_dragon_door", forgeRegistry);
-        birchSmallDoor = registerBlock(new SmallDragonDoor(Block.Properties.of(Material.WOOD, Blocks.BIRCH_PLANKS.defaultMaterialColor()).strength(3.0F).sound(SoundType.WOOD).noOcclusion(), SmallDragonDoor.OpenRequirement.NONE), "birch_small_dragon_door", forgeRegistry);
-        jungleSmallDoor = registerBlock(new SmallDragonDoor(Block.Properties.of(Material.WOOD, Blocks.JUNGLE_PLANKS.defaultMaterialColor()).strength(3.0F).sound(SoundType.WOOD).noOcclusion(), SmallDragonDoor.OpenRequirement.NONE), "jungle_small_dragon_door", forgeRegistry);
-        darkOakSmallDoor = registerBlock(new SmallDragonDoor(Block.Properties.of(Material.WOOD, Blocks.DARK_OAK_PLANKS.defaultMaterialColor()).strength(3.0F).sound(SoundType.WOOD).noOcclusion(), SmallDragonDoor.OpenRequirement.NONE), "dark_oak_small_dragon_door", forgeRegistry);
-        warpedSmallDoor = registerBlock(new SmallDragonDoor(Block.Properties.of(Material.WOOD, Blocks.WARPED_PLANKS.defaultMaterialColor()).strength(3.0F).sound(SoundType.WOOD).noOcclusion(), SmallDragonDoor.OpenRequirement.NONE), "warped_small_dragon_door", forgeRegistry);
-        crimsonSmallDoor = registerBlock(new SmallDragonDoor(Block.Properties.of(Material.WOOD, Blocks.CRIMSON_PLANKS.defaultMaterialColor()).strength(3.0F).sound(SoundType.WOOD).noOcclusion(), SmallDragonDoor.OpenRequirement.NONE), "crimson_small_dragon_door", forgeRegistry);
+        smallDragonDoors.add(registerBlock(new SmallDragonDoor(Block.Properties.of(Material.WOOD, Blocks.OAK_PLANKS.defaultMaterialColor()).strength(3.0F).sound(SoundType.WOOD).noOcclusion(), SmallDragonDoor.OpenRequirement.NONE), "oak_small_dragon_door", forgeRegistry));
+        smallDragonDoors.add(registerBlock(new SmallDragonDoor(Block.Properties.of(Material.WOOD, Blocks.SPRUCE_PLANKS.defaultMaterialColor()).strength(3.0F).sound(SoundType.WOOD).noOcclusion(), SmallDragonDoor.OpenRequirement.NONE), "spruce_small_dragon_door", forgeRegistry));
+        smallDragonDoors.add(registerBlock(new SmallDragonDoor(Block.Properties.of(Material.WOOD, Blocks.ACACIA_PLANKS.defaultMaterialColor()).strength(3.0F).sound(SoundType.WOOD).noOcclusion(), SmallDragonDoor.OpenRequirement.NONE), "acacia_small_dragon_door", forgeRegistry));
+        smallDragonDoors.add(registerBlock(new SmallDragonDoor(Block.Properties.of(Material.WOOD, Blocks.BIRCH_PLANKS.defaultMaterialColor()).strength(3.0F).sound(SoundType.WOOD).noOcclusion(), SmallDragonDoor.OpenRequirement.NONE), "birch_small_dragon_door", forgeRegistry));
+        smallDragonDoors.add(registerBlock(new SmallDragonDoor(Block.Properties.of(Material.WOOD, Blocks.JUNGLE_PLANKS.defaultMaterialColor()).strength(3.0F).sound(SoundType.WOOD).noOcclusion(), SmallDragonDoor.OpenRequirement.NONE), "jungle_small_dragon_door", forgeRegistry));
+        smallDragonDoors.add(registerBlock(new SmallDragonDoor(Block.Properties.of(Material.WOOD, Blocks.DARK_OAK_PLANKS.defaultMaterialColor()).strength(3.0F).sound(SoundType.WOOD).noOcclusion(), SmallDragonDoor.OpenRequirement.NONE), "dark_oak_small_dragon_door", forgeRegistry));
+        smallDragonDoors.add(registerBlock(new SmallDragonDoor(Block.Properties.of(Material.WOOD, Blocks.WARPED_PLANKS.defaultMaterialColor()).strength(3.0F).sound(SoundType.WOOD).noOcclusion(), SmallDragonDoor.OpenRequirement.NONE), "warped_small_dragon_door", forgeRegistry));
+        smallDragonDoors.add(registerBlock(new SmallDragonDoor(Block.Properties.of(Material.WOOD, Blocks.CRIMSON_PLANKS.defaultMaterialColor()).strength(3.0F).sound(SoundType.WOOD).noOcclusion(), SmallDragonDoor.OpenRequirement.NONE), "crimson_small_dragon_door", forgeRegistry));
 
         // TODO set properties for these doors
         murdererDoor = registerBlock(new DragonDoor(AbstractBlock.Properties.copy(oakDoor), DragonDoor.OpenRequirement.NONE), "murderer_dragon_door", forgeRegistry);
@@ -159,14 +165,11 @@ public class DSBlocks
         registerDoor(stoneDoor, new Item.Properties().tab(DragonSurvivalMod.items), forgeRegistry);
         registerDoor(legacyDoor, new Item.Properties().tab(DragonSurvivalMod.items), forgeRegistry);
 
-        registerItem(oakSmallDoor, new Item.Properties().tab(DragonSurvivalMod.items), forgeRegistry);
-        registerItem(spruceSmallDoor, new Item.Properties().tab(DragonSurvivalMod.items), forgeRegistry);
-        registerItem(acaciaSmallDoor, new Item.Properties().tab(DragonSurvivalMod.items), forgeRegistry);
-        registerItem(jungleSmallDoor, new Item.Properties().tab(DragonSurvivalMod.items), forgeRegistry);
-        registerItem(darkOakSmallDoor, new Item.Properties().tab(DragonSurvivalMod.items), forgeRegistry);
-        registerItem(birchSmallDoor, new Item.Properties().tab(DragonSurvivalMod.items), forgeRegistry);
-        registerItem(warpedSmallDoor, new Item.Properties().tab(DragonSurvivalMod.items), forgeRegistry);
-        registerItem(crimsonSmallDoor, new Item.Properties().tab(DragonSurvivalMod.items), forgeRegistry);
+
+        for (SmallDragonDoor smallDragonDoor: smallDragonDoors) {
+            smallDragonDoor.getTags();
+            registerItem(smallDragonDoor, new Item.Properties().tab(DragonSurvivalMod.items), forgeRegistry);
+        }
 
         forgeRegistry.register(new BlockItem(PREDATOR_STAR_BLOCK, new Item.Properties().tab(DragonSurvivalMod.items)).setRegistryName("predator_star"));
     

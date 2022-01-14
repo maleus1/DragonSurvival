@@ -32,6 +32,7 @@ import by.jackraidenph.dragonsurvival.client.render.entity.projectiles.DragonSpi
 import by.jackraidenph.dragonsurvival.client.render.entity.projectiles.FireBallRenderer;
 import by.jackraidenph.dragonsurvival.client.shader.ShaderHelper;
 import by.jackraidenph.dragonsurvival.server.tileentity.DSTileEntities;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.particle.IParticleFactory;
@@ -84,6 +85,10 @@ public class ClientModEvents {
         DragonSkins.init();
         
         KeyInputHandler.setupKeybinds();
+
+        for (Block transparentBlock: DSBlocks.transparentBlocks) {
+            RenderTypeLookup.setRenderLayer(transparentBlock, RenderType.cutout());
+        }
 
         RenderTypeLookup.setRenderLayer(DSBlocks.dragon_altar_stone, RenderType.cutout());
         RenderTypeLookup.setRenderLayer(DSBlocks.dragon_altar_sandstone, RenderType.cutout());
